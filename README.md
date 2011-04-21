@@ -53,3 +53,29 @@ I have chosen crc32 as default algorithm because a creates a nice dense ring dis
 ### Small API
 
 In these examples I assume that you already setup a `hashring` instance, with the variable name `ring` like I did the in the examples illustrated above.
+
+**Getting a node by key**
+a.k.a key -> node look up, this is where all the magic is happening.
+
+``` javascript
+ring.getNode('foo'); // => '192.168.0.104:11212'
+ring.getNode('pewpew'); // => '192.168.0.103:11212'
+```
+
+**Replacing a server**
+If you are experiencing downtime with one of your servers, you might want to `hot swap` with a new server.
+
+``` javascript
+ring.replaceServer('192.168.0.104:11212','192.168.0.112:11212');
+ring.getNode('foo'); // => '192.168.0.112:11212'
+```
+
+**Add server**
+Adds a new server to the hash ring, but please note that this could cause a shift in current key -> server distribution.
+
+``` javascript
+ring.addServer('192.168.0.102:11212');
+```
+
+
+For a more extensive documentation: http://3rd-eden.github.com/node-hashring/
