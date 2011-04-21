@@ -191,7 +191,7 @@ the algorithm. The JavaScript based <code>crc32</code> algorithm beats <code>MD5
   <span class="this">this</span>.<span class="variable">algorithm</span> = <span class="variable">algorithm</span> || <span class="string">'crc32'</span>;
   
   <span class="comment">// overwrite the hashKey method if crc32 is chosen</span>
-  <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">algorithm</span> == <span class="string">'crc32'</span>){
+  <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">algorithm</span> === <span class="string">'crc32'</span>){
     <span class="this">this</span>.<span class="variable">hashKey</span> = <span class="this">this</span>.<span class="variable">crc32HashKey</span>;
   }
   
@@ -242,7 +242,7 @@ the Object.keys lookup, or just cache the <code>keys</code> on regeneration.
     , <span class="variable">nodes</span> = <span class="this">this</span>.<span class="variable">sortedKeys</span>
     , <span class="variable">position</span> = <span class="class">Bisection</span>(<span class="variable">nodes</span>, <span class="variable">keys</span>);
   
-  <span class="keyword">return</span> <span class="variable">position</span> == <span class="variable">nodes</span>.<span class="variable">length</span> ? <span class="number integer">0</span> : <span class="variable">position</span>;
+  <span class="keyword">return</span> <span class="variable">position</span> === <span class="variable">nodes</span>.<span class="variable">length</span> ? <span class="number integer">0</span> : <span class="variable">position</span>;
 };</code></pre>
 </td>
 </tr>
@@ -259,9 +259,19 @@ hot swapping servers</p>
 <pre><code><span class="class">HashRing</span>.<span class="variable">replaceServer</span> = <span class="keyword">function</span>(<span class="variable">oldServer</span>, <span class="variable">newServer</span>){
   <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
   
-  <span class="class">Object</span>.<span class="variable">key</span>(<span class="this">this</span>.<span class="variable">ring</span>).<span class="variable">forEach</span>(<span class="keyword">function</span>(<span class="variable">key</span>){
-    <span class="keyword">if</span> (<span class="variable">self</span>.<span class="variable">ring</span>[<span class="variable">key</span>] == <span class="variable">oldServer</span>)
+  <span class="comment">// replace the servers</span>
+  <span class="class">Object</span>.<span class="variable">keys</span>(<span class="this">this</span>.<span class="variable">ring</span>).<span class="variable">forEach</span>(<span class="keyword">function</span>(<span class="variable">key</span>){
+    <span class="keyword">if</span> (<span class="variable">self</span>.<span class="variable">ring</span>[<span class="variable">key</span>] === <span class="variable">oldServer</span>){
       <span class="variable">self</span>.<span class="variable">ring</span>[<span class="variable">key</span>] = <span class="variable">newServer</span>;
+    }
+  });
+  
+  <span class="comment">// update the cache, because we don't want to completly kill our cache</span>
+  <span class="comment">// as other key -&gt; server lookups might still be valid</span>
+  <span class="class">Object</span>.<span class="variable">keys</span>(<span class="this">this</span>.<span class="variable">cache</span>).<span class="variable">forEach</span>(<span class="keyword">function</span>(<span class="variable">key</span>){
+    <span class="keyword">if</span> (<span class="variable">self</span>.<span class="variable">cache</span>[<span class="variable">key</span>] === <span class="variable">oldServer</span>){
+      <span class="variable">self</span>.<span class="variable">cache</span>[<span class="variable">key</span>] = <span class="variable">newServer</span>;
+    }
   });
   
   <span class="comment">// remove the server from this.nodes and replace it with new server as well</span>
@@ -290,7 +300,10 @@ the same arguments interface as the constructor.
   <span class="comment">// pushes one, or more servers to</span>
   <span class="class">Array</span>.<span class="variable">prototype</span>.<span class="variable">push</span>.<span class="variable">apply</span>(<span class="this">this</span>.<span class="variable">nodes</span>,<span class="variable">server</span>);
   <span class="this">this</span>.<span class="variable">sortedKeys</span>.<span class="variable">length</span> = <span class="number integer">0</span>;
+  
+  <span class="comment">// clear all old caches and regenerate</span>
   <span class="this">this</span>.<span class="variable">ring</span> = {};
+  <span class="this">this</span>.<span class="variable">cache</span> = {};
   <span class="this">this</span>.<span class="variable">generateRing</span>();
 };</code></pre>
 </td>
@@ -307,7 +320,7 @@ the same arguments interface as the constructor.
 <pre><code><span class="class">HashRing</span>.<span class="variable">createRange</span> = <span class="keyword">function</span>(<span class="variable">key</span>, <span class="variable">size</span>, <span class="variable">distinct</span>){
   <span class="keyword">if</span> (!<span class="class">Object</span>.<span class="variable">keys</span>(<span class="this">this</span>.<span class="variable">ring</span>).<span class="variable">length</span>) <span class="keyword">return</span> <span class="variable">false</span>;
   
-  <span class="variable">distinct</span> = <span class="variable">distinct</span> == <span class="string">'undefined'</span> ? <span class="variable">true</span> : <span class="variable">distinct</span>;
+  <span class="variable">distinct</span> = <span class="variable">distinct</span> === <span class="string">'undefined'</span> ? <span class="variable">true</span> : <span class="variable">distinct</span>;
   
   <span class="keyword">var</span> <span class="variable">returnvalues</span> = {}
     , <span class="variable">returnnodes</span> = []
@@ -428,7 +441,7 @@ the same arguments interface as the constructor.
  </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">hashRing</span>.<span class="variable">version</span> = <span class="string">'0.0.1'</span>;
+<pre><code><span class="variable">hashRing</span>.<span class="variable">version</span> = <span class="string">'0.0.2'</span>;
 
 <span class="variable">module</span>.<span class="variable">exports</span> = <span class="variable">hashRing</span>;</code></pre>
 </td>
