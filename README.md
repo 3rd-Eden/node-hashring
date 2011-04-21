@@ -20,7 +20,7 @@ Creating a hash ring with only one server
 
 ``` javascript
 var hashring = require('hashring');
-var ring = new hashring('192.168.0.102:11212')
+var ring = new hashring('192.168.0.102:11212');
 ```
 
 Creating a hash ring with multiple servers
@@ -40,3 +40,16 @@ var ring = new hashring({
 , '192.168.0.104:11212': 1
 });
 ```
+
+By default the hash ring uses a JavaScript crc32 implementation hashing algorithm. But this can be overwritten by adding a second argument to the constructor. This can be anything that is supported as hashing algorithm by the crypto module.
+
+``` javascript
+var hashring = require('hashring');
+var ring = new hashring('192.168.0.102:11212', 'md5');
+```
+
+I have chosen crc32 as default algorithm because a creates a nice dense ring distribution. Another good alternative and common used hashing algorithm is md5. The JavaScript crc32 algorithm is faster than md5. So If you are doing allot of operations per seconds these small differences can really matter.
+
+### Small API
+
+In these examples I assume that you already setup a `hashring` instance, with the variable name `ring` like I did the in the examples illustrated above.
