@@ -1,4 +1,7 @@
 doc:
 	dox --title "node-hashring" lib/* > doc/index.html
 
-.PHONY: doc
+test:
+	expresso -I lib $(TESTFLAGS) tests/*.test.js
+
+.PHONY: test doc
