@@ -1,3 +1,8 @@
+April 22, 2011
+- Externalized the bisection and applied indutny / donnerjack's patches.
+- Added test suite
+- Optimized nodes lookup
+
 April 21, 2011
 
 - Fixed some issues related to the cache addition as the cache needs to be cleared when new servers are added and replaced.
