@@ -71,4 +71,54 @@ module.exports = {
     ring.cache = {}; // clear cache
     ring.getNode('justdied').should.equal(skynet);
   }
+  
+  // kindly lended from `node-hash-ring` :)
+, 'Distribution': function(){
+    var iterations = 100000
+      , nodes = {'192.168.0.102:11212': 1, '192.168.0.103:11212': 1, '192.168.0.104:11212': 1}
+      , ring = new hashring(nodes)
+      , genCode = function(length){
+          length = length || 10;
+          var chars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890"
+            , numChars = chars.length
+            , ret = ""
+            , i = 0;
+          
+          for (; i < length; i++) {
+              ret += chars[parseInt(Math.random() * numChars, 10)];
+          }
+          
+          return ret;
+      }
+      
+    var counts = {}
+      , node
+      , i
+      , len
+      , word;
+      
+    for (i = 0, len = nodes.length; i < len; i++) {
+        node = nodes[i];
+        counts[node] = 0;
+    }
+    
+    for (i = 0, len = iterations; i < len; i++) {
+      word = genCode(10);
+      node = ring.getNode(word);
+      counts[node] = counts[node] || 0;
+      counts[node]++;
+    }
+    
+    var total = Object.keys(counts).reduce(function(sum, node) {
+        return sum += counts[node];
+      }, 0.0);
+    
+    var delta = 0.05
+      , lower = 1.0 / 3 - 0.05
+      , upper = 1.0 / 3 + 0.05;
+      
+    for(node in counts) {
+      (counts[node] / total).should.be.within(lower, upper);
+    }
+  }
 };
