@@ -36,7 +36,7 @@ constructing
     
     // run the next benchmark if it exists
     var next = benchmarks.shift();
-    if (next && next.run()) next.run();
+    if (next && next.run) next.run();
   });
 
 var random = new Benchmark.Suite;
@@ -55,7 +55,7 @@ random
     
     // run the next benchmark if it exists
     var next = benchmarks.shift();
-    if (next && next.run()) next.run();
+    if (next && next.run) next.run();
   });
 
 var same = new Benchmark.Suite;
@@ -74,7 +74,7 @@ same
     
     // run the next benchmark if it exists
     var next = benchmarks.shift();
-    if (next && next.run()) next.run();
+    if (next && next.run) next.run();
   });
 
 
