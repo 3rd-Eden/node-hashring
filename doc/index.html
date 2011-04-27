@@ -283,7 +283,7 @@ the same arguments interface as the constructor.
 
 <h2></h2>
 
-<ul><li><p><strong>param</strong>: <em>String</em>  key The key that should get a range</p></li><li><p><strong>param</strong>: <em>Number</em>  size The maxium amount of nodes to return</p></li><li><p><strong>param</strong>: <em>Boolean</em>  distinct Get duplicate nodes</p></li><li><p><strong>returns</strong>: <em>Array</em>  The nodes</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+<ul><li><p><strong>param</strong>: <em>String</em>  key The key that should get a range</p></li><li><p><strong>param</strong>: <em>Number</em>  size The maxium amount of nodes to return</p></li><li><p><strong>param</strong>: <em>Boolean</em>  distinct Remove duplicate nodes</p></li><li><p><strong>returns</strong>: <em>Array</em>  The nodes</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
 <pre><code><span class="class">HashRing</span>.<span class="variable">createRange</span> = <span class="keyword">function</span>(<span class="variable">key</span>, <span class="variable">size</span>, <span class="variable">distinct</span>){
@@ -410,7 +410,7 @@ the same arguments interface as the constructor.
  </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">hashRing</span>.<span class="variable">version</span> = <span class="string">'0.0.2'</span>;
+<pre><code><span class="variable">hashRing</span>.<span class="variable">version</span> = <span class="string">'0.0.3'</span>;
 
 <span class="variable">module</span>.<span class="variable">exports</span> = <span class="variable">hashRing</span>;</code></pre>
 </td>
