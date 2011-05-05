@@ -1,3 +1,6 @@
+May 05, 2011
+- Added the missing `removeServer` method.
+
 April 22, 2011
 - Externalized the bisection and applied indutny / donnerjack's patches.
 - Added test suite

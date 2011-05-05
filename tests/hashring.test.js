@@ -71,6 +71,12 @@ module.exports = {
     ring.cache = {}; // clear cache
     ring.getNode('justdied').should.equal(skynet);
   }
+
+, 'Removing servers': function(){
+    var ring = new hashring(['192.168.0.102:11212', '192.168.0.103:11212', '192.168.0.104:11212']);
+    ring.removeServer('192.168.0.102:11212');
+    ring.nodes.indexOf('192.168.0.102:11212').should.equal(-1);
+  }
   
   // kindly lended from `node-hash-ring` :)
 , 'Distribution': function(){

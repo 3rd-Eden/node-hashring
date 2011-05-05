@@ -279,6 +279,30 @@ the same arguments interface as the constructor.
 </tr>
 <tr class="code">
 <td class="docs">
+<p>Removes a server from the ring and regenerates the ring.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  server The IP of the server that needs to be removed</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">HashRing</span>.<span class="variable">removeServer</span> = <span class="keyword">function</span>(<span class="variable">server</span>){
+  <span class="keyword">var</span> <span class="variable">index</span> = <span class="this">this</span>.<span class="variable">nodes</span>.<span class="variable">indexOf</span>(<span class="variable">server</span>);
+  <span class="keyword">if</span> (<span class="variable">index</span> == -<span class="number integer">1</span>) <span class="keyword">return</span>; <span class="comment">// no need to re-generate the whole ring, no match</span>
+  
+  <span class="this">this</span>.<span class="variable">nodes</span>.<span class="variable">splice</span>(<span class="variable">index</span>, <span class="number integer">1</span>);
+  <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">weights</span>[<span class="variable">server</span>]){
+    <span class="keyword">delete</span> <span class="this">this</span>.<span class="variable">weights</span>[<span class="variable">server</span>];
+  }
+  <span class="comment">// clear all old caches and regenerate</span>
+  <span class="this">this</span>.<span class="variable">ring</span> = {};
+  <span class="this">this</span>.<span class="variable">cache</span> = {};
+  <span class="this">this</span>.<span class="variable">generateRing</span>();
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
 <p>Iterates over the nodes for a give key, can be used to create redundancy support.</p>
 
 <h2></h2>
