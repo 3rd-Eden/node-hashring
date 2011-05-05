@@ -82,5 +82,6 @@ Remove a server from the generated hash ring.
 
 ``` javascript
 ring.removeServer('192.168.0.102:11212');
+```
 
 For a more extensive documentation: http://3rd-eden.github.com/node-hashring/
