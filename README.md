@@ -70,12 +70,17 @@ ring.replaceServer('192.168.0.104:11212','192.168.0.112:11212');
 ring.getNode('foo'); // => '192.168.0.112:11212'
 ```
 
-**Add server**
+**Add a server**
 Adds a new server to the hash ring, but please note that this could cause a shift in current key -> server distribution.
 
 ``` javascript
 ring.addServer('192.168.0.102:11212');
 ```
 
+**Remove a server**
+Remove a server from the generated hash ring.
+
+``` javascript
+ring.removeServer('192.168.0.102:11212');
 
 For a more extensive documentation: http://3rd-eden.github.com/node-hashring/
