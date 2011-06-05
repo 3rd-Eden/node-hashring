@@ -128,10 +128,10 @@ the algorithm. The JavaScript based <code>crc32</code> algorithm beats <code>MD5
 
 <h2></h2>
 
-<ul><li><p><strong>param</strong>: <em>mixed</em>  arg The server / weights / servers for the hashring</p></li><li><p><strong>param</strong>: <em>String</em>  [algorithm] The algorithm that should be used to hash the keys.</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+<ul><li><p><strong>param</strong>: <em>mixed</em>  arg The server / weights / servers for the hashring</p></li><li><p><strong>param</strong>: <em>String</em>  [algorithm] The algorithm that should be used to hash the keys.</p></li><li><p><strong>param</strong>: <em>Object</em>  [options] Extra configuration options for the hash ring.</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
-<pre><code><span class="keyword">function</span> <span class="variable">hashRing</span>(<span class="variable">args</span>, <span class="variable">algorithm</span>){
+<pre><code><span class="keyword">function</span> <span class="variable">hashRing</span>(<span class="variable">args</span>, <span class="variable">algorithm</span>, <span class="variable">options</span>){
   
   <span class="keyword">var</span> <span class="variable">nodes</span> = []
     , <span class="variable">weights</span> = {};
@@ -161,6 +161,11 @@ the algorithm. The JavaScript based <code>crc32</code> algorithm beats <code>MD5
   <span class="comment">// overwrite the hashKey method if crc32 is chosen</span>
   <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">algorithm</span> === <span class="string">'crc32'</span>){
     <span class="this">this</span>.<span class="variable">hashKey</span> = <span class="this">this</span>.<span class="variable">crc32HashKey</span>;
+  }
+  
+  <span class="this">this</span>.<span class="variable">options</span> = {<span class="variable">vnode_count</span>: <span class="number integer">40</span>};
+  <span class="keyword">if</span> (<span class="variable">options</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">options</span>.<span class="variable">vnode_count</span>) {
+    <span class="this">this</span>.<span class="variable">options</span>.<span class="variable">vnode_count</span> = <span class="variable">options</span>.<span class="variable">vnode_count</span>;
   }
   
   <span class="this">this</span>.<span class="variable">generateRing</span>();
@@ -434,7 +439,7 @@ the same arguments interface as the constructor.
  </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">hashRing</span>.<span class="variable">version</span> = <span class="string">'0.0.3'</span>;
+<pre><code><span class="variable">hashRing</span>.<span class="variable">version</span> = <span class="string">'0.0.5'</span>;
 
 <span class="variable">module</span>.<span class="variable">exports</span> = <span class="variable">hashRing</span>;</code></pre>
 </td>
