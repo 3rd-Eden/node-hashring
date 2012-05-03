@@ -39,6 +39,23 @@ module.exports = {
     Object.keys(ring.weights).should.have.length(0);
   }
 
+, 'Constructing with no arguments': function(){
+    var ring = new hashring();
+    
+    ring.nodes.should.have.length(0);
+    ring.sortedKeys.should.have.length(0);
+    Object.keys(ring.weights).should.have.length(0);
+  }
+
+, 'Adding server after zero-argument constructor': function(){
+    var ring = new hashring();
+    ring.addServer('192.168.0.102:11212');
+    
+    ring.nodes.should.have.length(1);
+    ring.sortedKeys.length.should.be.above(1);
+    Object.keys(ring.weights).should.have.length(0);
+  }
+
 , 'Looking up keys': function(){
     var ring = new hashring(['192.168.0.102:11212', '192.168.0.103:11212', '192.168.0.104:11212']);
     ring.nodes.indexOf(ring.getNode('foo')).should.be.above(-1);
@@ -76,6 +93,15 @@ module.exports = {
     var ring = new hashring(['192.168.0.102:11212', '192.168.0.103:11212', '192.168.0.104:11212']);
     ring.removeServer('192.168.0.102:11212');
     ring.nodes.indexOf('192.168.0.102:11212').should.equal(-1);
+  }
+
+, 'Removing last server': function(){
+    var ring = new hashring('192.168.0.102:11212');
+    ring.removeServer('192.168.0.102:11212');
+    
+    ring.nodes.should.have.length(0);
+    ring.sortedKeys.should.have.length(0);
+    Object.keys(ring.weights).should.have.length(0);
   }
   
   // kindly lended from `node-hash-ring` :)
