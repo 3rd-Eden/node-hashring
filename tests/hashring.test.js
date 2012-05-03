@@ -1,5 +1,4 @@
 "use strict";
-console.error('trololol');
 
 var Hashring = require('../lib/hashring');
 
