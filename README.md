@@ -1,4 +1,4 @@
-## hashring
+## hashring [![BuildStatus](https://secure.travis-ci.org/3rd-Eden/node-hashring.png)](http://travis-ci.org/3rd-Eden/node-hashring)
 
 Hash ring provides consistent hashing based on the `libketema` library.
 

@@ -1,3 +1,7 @@
+May 03, 2012
+- Updated test suites
+- Fixed zero arguments bug
+
 May 05, 2011
 - Added the missing `removeServer` method.
 
@@ -8,4 +12,5 @@ April 22, 2011
 
 April 21, 2011
 
-- Fixed some issues related to the cache addition as the cache needs to be cleared when new servers are added and replaced.
+- Fixed some issues related to the cache addition as the cache needs to be
+  cleared when new servers are added and replaced.
