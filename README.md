@@ -41,6 +41,18 @@ var ring = new hashring({
 });
 ```
 
+Creating a hash ring with multiple servers an vnodes selected per nodes
+
+``` javascript
+var hashring = require('hashring');
+var ring = new hashring({
+  '192.168.0.102:11212': {"vnodes": 5}
+, '192.168.0.103:11212': {"vnodes": 10}
+, '192.168.0.104:11212': {"vnodes": 7}
+});
+```
+Optionaly you could add the weigth property to the object.
+
 By default the hash ring uses a JavaScript crc32 implementation hashing algorithm. But this can be overwritten by adding a second argument to the constructor. This can be anything that is supported as hashing algorithm by the crypto module.
 
 ``` javascript
