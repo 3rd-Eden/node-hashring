@@ -8,7 +8,7 @@ run-tests:
 		--reporter $(REPORTER) \
 		--ui $(UI) \
 		--growl \
-		$(ALL_TESTS)
+		$(TESTS)
 
 doc:
 	dox --title "node-hashring" lib/* > doc/index.html
