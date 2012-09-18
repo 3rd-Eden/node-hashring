@@ -38,25 +38,27 @@ module.exports = {
     ring.sortedKeys.length.should.be.above(1);
     Object.keys(ring.weights).should.have.length(3);
   }
+
 , 'Constructing with a object with pernode vnodes': function(){
     var ring = new Hashring({
         '192.168.0.102:11212': {"vnodes":40}
       , '192.168.0.103:11212': {"vnodes":50}
       , '192.168.0.104:11212': {"vnodes":5}
     });
-    ring.nodes.should.have.length(3);
-    ring.sortedKeys.length.should.be.equal((40+50+5)*3)
 
-   ring = new Hashring({
+    ring.nodes.should.have.length(3);
+    ring.sortedKeys.length.should.be.equal((40+50+5)*3);
+
+    ring = new Hashring({
         '192.168.0.102:11212': {"vnodes":4}
       , '192.168.0.103:11212': {"vnodes":3}
       , '192.168.0.104:11212': {"vnodes":5}
     });
+
     ring.nodes.should.have.length(3);
     ring.sortedKeys.length.should.be.equal((4+3+5)*3)
-
-
   }
+
 , 'Constructing with a different algorithm': function () {
     var ring = new Hashring('192.168.0.102:11212', 'md5');
 
