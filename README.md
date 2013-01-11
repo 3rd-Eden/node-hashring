@@ -14,7 +14,14 @@ Or fork this repository to your machine
 
 ### Basic usage
 
-The constructor is designed to handle multiple arguments types as the hash ring can be used for different use cases. You have the ability to use a `String` to add a single server, a `Array` to provide multiple servers or an `Object` to provide servers with a custom weight. The weight can be used to give a server a bigger distribution in the hash ring. For example you have 3 machines, 2 of those machines have 8 gig memory and one has 32 gig of memory because the last server has more memory you might it to handle more keys than the other server. So you can give it a weight of 2 and the other servers a weight of 1.
+The constructor is designed to handle multiple arguments types as the hash ring
+can be used for different use cases. You have the ability to use a `String` to
+add a single server, a `Array` to provide multiple servers or an `Object` to
+provide servers with a custom weight. The weight can be used to give a server a
+bigger distribution in the hash ring. For example you have 3 machines, 2 of
+those machines have 8 gig memory and one has 32 gig of memory because the last
+server has more memory you might it to handle more keys than the other server.
+So you can give it a weight of 2 and the other servers a weight of 1.
 
 Creating a hash ring with only one server
 
@@ -53,18 +60,25 @@ var ring = new hashring({
 ```
 Optionaly you could add the weigth property to the object.
 
-By default the hash ring uses a JavaScript crc32 implementation hashing algorithm. But this can be overwritten by adding a second argument to the constructor. This can be anything that is supported as hashing algorithm by the crypto module.
+By default the hash ring uses a JavaScript crc32 implementation hashing
+algorithm. But this can be overwritten by adding a second argument to the
+constructor. This can be anything that is supported as hashing algorithm by the
+crypto module.
 
 ``` javascript
 var hashring = require('hashring');
 var ring = new hashring('192.168.0.102:11212', 'md5');
 ```
 
-I have chosen crc32 as default algorithm because a creates a nice dense ring distribution. Another good alternative and common used hashing algorithm is md5. The JavaScript crc32 algorithm is faster than md5. So If you are doing allot of operations per seconds these small differences can really matter.
+I have chosen crc32 as default algorithm because a creates a nice dense ring
+distribution. Another good alternative and common used hashing algorithm is md5.
+The JavaScript crc32 algorithm is faster than md5. So If you are doing allot of
+operations per seconds these small differences can really matter.
 
 ### Small API
 
-In these examples I assume that you already setup a `hashring` instance, with the variable name `ring` like I did the in the examples illustrated above.
+In these examples I assume that you already setup a `hashring` instance, with
+the variable name `ring` like I did the in the examples illustrated above.
 
 **Getting a node by key**
 a.k.a key -> node look up, this is where all the magic is happening.
@@ -75,7 +89,8 @@ ring.getNode('pewpew'); // => '192.168.0.103:11212'
 ```
 
 **Replacing a server**
-If you are experiencing downtime with one of your servers, you might want to `hot swap` with a new server.
+If you are experiencing downtime with one of your servers, you might want to
+`hot swap` with a new server.
 
 ``` javascript
 ring.replaceServer('192.168.0.104:11212','192.168.0.112:11212');
@@ -83,7 +98,8 @@ ring.getNode('foo'); // => '192.168.0.112:11212'
 ```
 
 **Add a server**
-Adds a new server to the hash ring, but please note that this could cause a shift in current key -> server distribution.
+Adds a new server to the hash ring, but please note that this could cause a
+shift in current key -> server distribution.
 
 ``` javascript
 ring.addServer('192.168.0.102:11212');
