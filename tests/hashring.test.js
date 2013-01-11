@@ -120,8 +120,8 @@ module.exports = {
       , skynet = '192.168.0.128:11212';
 
     ring.replaceServer(amazon, skynet);
-    ring.cache.justdied.should.equal(skynet);
-    ring.cache = {}; // clear cache
+    ring.cache.get("justdied").should.equal(skynet);
+    ring.cache.reset(); // clear cache
     ring.getNode('justdied').should.equal(skynet);
   }
 
