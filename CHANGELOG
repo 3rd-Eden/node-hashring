@@ -1,3 +1,7 @@
+Jan 11, 2013
+- Added LRU caching instead of a plain object for caching, this prevents memory
+  leaks
+
 May 03, 2012
 - Updated test suites
 - Fixed zero arguments bug
