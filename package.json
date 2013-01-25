@@ -3,7 +3,7 @@
   , "version": "0.0.7"
   , "author": "Arnout Kazemier"
   , "description": "A pure JavaScript hash ring based on libketama"
-  , "main": "./lib/hashring.js"
+  , "main": "./index.js"
   , "keywords":[
         "hashring"
       , "hash ring"
@@ -12,9 +12,6 @@
       , "consistent hashing"
       , "libketama"
     ]
-  , "directories": {
-      "lib": "./lib"
-    }
   , "maintainers": [{
         "name":"Arnout Kazemier"
       , "email":"info@3rd-Eden.com"
