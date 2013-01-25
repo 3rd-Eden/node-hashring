@@ -1,9 +1,9 @@
 {
     "name": "hashring"
-  , "version": "0.0.6"
+  , "version": "0.0.7"
   , "author": "Arnout Kazemier"
   , "description": "A pure JavaScript hash ring based on libketama"
-  , "main": "index"
+  , "main": "./lib/hashring.js"
   , "keywords":[
         "hashring"
       , "hash ring"
@@ -29,7 +29,8 @@
       , "url" : "http://github.com/3rd-Eden/node-hashring.git"
     }]
   , "dependencies": {
-        "bisection": ""
+        "bisection": "",
+        "simple-lru-cache": "0.0.x"
     }
   , "devDependencies": {
         "mocha": "*"
