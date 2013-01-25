@@ -1,12 +1,12 @@
-"use strict";
+'use strict';
 
 /**
- * Module dependencies
+ * Module dependencies.
  */
 var createHash = require('crypto').createHash
   , StringDecoder = require('string_decoder').StringDecoder
-  , bisection = require('bisection')
-  , SimpleCache = require("simple-lru-cache");
+  , SimpleCache = require("simple-lru-cache")
+  , bisection = require('bisection');
 
 /**
  * Creates a hashring for key => server lookups. It uses `crc32` as default
@@ -20,12 +20,13 @@ var createHash = require('crypto').createHash
  * @param {Object} [options] Extra configuration options for the hash ring.
  * @api public
  */
-function HashRing (args, algorithm, options) {
+function HashRing(args, algorithm, options) {
   options = options || {};
 
   var nodes = []
     , weights = {}
-    , vnodes = {};
+    , vnodes = {}
+    , i;
 
   switch (Object.prototype.toString.call(args)){
     case '[object String]':
@@ -34,19 +35,21 @@ function HashRing (args, algorithm, options) {
 
     case '[object Object]':
       nodes = Object.keys(args);
-      for(var i in args){
-        if (typeof args[i] === "number"){
+
+      for(i in args) {
+        if (typeof args[i] === 'number'){
             weights[i] = args[i];
         } else {
-          if (args[i].weigth !== undefined) {
+          if ('weight' in args[i]) {
             weights[i] = args[i].weigth;
           }
 
-          if (args[i].vnodes !== undefined) {
+          if ('vnodes' in args[i]) {
             vnodes[i] = args[i].vnodes;
           }
         }
       }
+
       break;
 
     case '[object Undefined]':
@@ -63,37 +66,35 @@ function HashRing (args, algorithm, options) {
 
   this.ring = {};
 
-  // Default cache size 5000 keys
+  // Default cache size 5000 keys.
   this.cache = new SimpleCache({
       maxSize: options.maxCacheSize || 5000
   });
 
   this.sortedKeys = [];
-
   this.nodes = nodes || [];
   this.weights = weights;
   this.vnodes = vnodes;
   this.algorithm = algorithm || 'crc32';
-
-  // overwrite the hashKey method if crc32 is chosen
-  if (this.algorithm === 'crc32'){
-    this.hashKey = this.crc32HashKey;
-  }
-
   this.options = {
       vnode_count: options.vnode_count || 40
   };
 
-  this.generateRing();
+  // Overwrite the hashKey method if CRC32 is chosen.
+  if (this.algorithm === 'crc32') {
+    this.hashKey = this.crc32HashKey;
+  }
+
+  this.generate();
 }
 
 /**
- * Generates the hash ring distribution based on the nodes and their weights
+ * Generates the hash ring distribution based on the nodes and their weights.
  *
- * @todo remove the filty var stack.
+ * @TODO remove the filty var stack.
  * @api private
  */
-HashRing.prototype.generateRing = function generateRing() {
+HashRing.prototype.generateRing = HashRing.prototype.generate = function generate() {
   var totalweight = 0
     , i = this.nodes.length
     , len
@@ -113,7 +114,7 @@ HashRing.prototype.generateRing = function generateRing() {
     totalweight += (tmp || 1);
   }
 
-  // Calculate our hash-ring
+  // Calculate our hash-ring.
   this.sortedKeys.length = 0;
 
   for (i = 0; i < len; i++) {
@@ -126,7 +127,7 @@ HashRing.prototype.generateRing = function generateRing() {
     }
 
     // The factor is based on the weight, the more weight the more space a item
-    // will get in our hash ring
+    // will get in our hash ring.
     var vnodes_count = this.vnodes[node] || this.options.vnode_count;
     factor = Math.floor((vnodes_count * len * weight) / totalweight);
 
@@ -142,44 +143,46 @@ HashRing.prototype.generateRing = function generateRing() {
       }
     }
   }
+
   // Sort the keys, nummeric !important. I forgot it at first and took me
-  // 2 hours to debug \o/
+  // 2 hours to debug \o/.
   this.sortedKeys.sort(function sort(a, b) {
     return a - b;
   });
 };
 
 /**
- * returns the correct node for the key based on the hashing, or false if it
- * fails to get the node
+ * Returns the correct node for the key based on the hashing, or false if it
+ * fails to get the node.
  *
  * @param {String} key return
  * @returns {String|Boolean} False if there isn't a match, string of the server ip when we have a match
  * @api public
  */
-HashRing.prototype.getNode = function getNode(key) {
-  // faster loookups
+HashRing.prototype.getNode = HashRing.prototype.get = function get(key) {
+  // Faster lookups.
   var cached = this.cache.get(key);
   if (cached) return cached;
 
   var position = this.getNodePosition(key)
-    , node = position === false // needs explicit checking for `false`
+    , node = position === false // Needs explicit checking for `false`
       ? false
       : this.ring[this.sortedKeys[position]];
 
   if (!node) return false;
   this.cache.set(key, node);
+
   return node;
 };
 
 /**
- * Returns the position of the key inside the keyring
+ * Returns the position of the key inside the keyring.
  *
  * @param {String} key The key that needs his it's position calculated.
  * @returns {Number} the index of sortedKeys
  * @api public
  */
-HashRing.prototype.getNodePosition = function getNodePosition(key) {
+HashRing.prototype.getNodePosition = HashRing.prototype.position = function position(key) {
   if (!this.sortedKeys.length) return false;
 
   var keys = this.generateKey(key)
@@ -191,54 +194,54 @@ HashRing.prototype.getNodePosition = function getNodePosition(key) {
 
 /**
  * Replaces a assigned server of the ring with a new server
- * hot swapping servers
+ * hot swapping servers.
  *
  * @param {String} oldServer The server that needs to be replaced
  * @param {String} newServer The new server
  * @api public
  */
-HashRing.prototype.replaceServer = function replaceServer(oldServer, newServer){
+HashRing.prototype.replaceServer = HashRing.prototype.replace = function replace(oldServer, newServer){
   var self = this;
 
-  // replace the servers
+  // Replace the servers.
   Object.keys(this.ring).forEach(function each(key) {
     if (self.ring[key] === oldServer) {
       self.ring[key] = newServer;
     }
   });
 
-  // update the cache, because we don't want to completly kill our cache
-  // as other key -> server lookups might still be valid
+  // Update the cache, because we don't want to completly kill our cache
+  // as other key -> server lookups might still be valid.
   this.cache.forEach(function each(value,key) {
     if (value === oldServer) {
       self.cache.set(key,newServer);
     }
   });
 
-  // remove the server from this.nodes and replace it with new server as well
+  // Remove the server from this.nodes and replace it with new server as well.
   this.nodes.splice(this.nodes.indexOf(oldServer), 1, newServer);
 };
 
 /**
- * Adds a server and regenerates the ring
+ * Adds a server and regenerates the ring.
  *
- * @todo create the same arguments interface as the constructor.
+ * @TODO create the same arguments interface as the constructor.
  * @param {Object} weights server=>weights
  * @api public
  */
-HashRing.prototype.addServer = function addServer(server, weights, vnodes) {
-  if (this.nodes.indexOf(server) !== -1) return; // prevents duplicates
+HashRing.prototype.addServer = HashRing.prototype.add = function add(server, weights, vnodes) {
+  if (this.nodes.indexOf(server) !== -1) return; // Prevents duplicates
 
   var key;
 
-  // add weights
+  // Add weights.
   if (weights) {
     for(key in weights) {
       this.weights[key] = weights[key];
     }
   }
 
-  // add vnodes
+  // Add vnodes.
   if (vnodes) {
     for(key in vnodes) {
       this.vnodes[key] = vnodes[key];
@@ -249,10 +252,10 @@ HashRing.prototype.addServer = function addServer(server, weights, vnodes) {
     server = [server];
   }
 
-  // pushes one, or more servers to
+  // Pushes one, or more servers to.
   Array.prototype.push.apply(this.nodes, server);
 
-  // clear all old caches and regenerate
+  // Clear all old caches and regenerate.
   this.ring = {};
   this.cache.reset();
   this.generateRing();
@@ -264,9 +267,9 @@ HashRing.prototype.addServer = function addServer(server, weights, vnodes) {
  * @param {String} server The IP of the server that needs to be removed
  * @api public
  */
-HashRing.prototype.removeServer = function removeServer(server) {
+HashRing.prototype.removeServer = HashRing.prototype.remove = function remove(server) {
   var index = this.nodes.indexOf(server);
-  if (index === -1) return; // no need to re-generate the whole ring, no match
+  if (index === -1) return; // No need to re-generate the whole ring, no match.
 
   this.nodes.splice(index, 1);
 
@@ -278,7 +281,7 @@ HashRing.prototype.removeServer = function removeServer(server) {
     delete this.weights[server];
   }
 
-  // clear all old caches and regenerate
+  // Clear all old caches and regenerate.
   this.ring = {};
   this.cache.reset();
   this.generateRing();
@@ -293,7 +296,7 @@ HashRing.prototype.removeServer = function removeServer(server) {
  * @returns {Array} The nodes
  * @api public
  */
-HashRing.prototype.createRange = function createRange(key, size, distinct) {
+HashRing.prototype.createRange = HashRing.prototype.range = function range(key, size, distinct) {
   if (!Object.keys(this.ring).length) return false;
 
   distinct = distinct === 'undefined'
@@ -308,7 +311,7 @@ HashRing.prototype.createRange = function createRange(key, size, distinct) {
     , i = 0
     , length = slices.length;
 
-  // a small filter function that checks for duplicates
+  // A small filter function that checks for duplicates.
   function distinctFilter(value) {
     if (!returnvalues[value]) {
       returnvalues[value] = true;
@@ -325,7 +328,7 @@ HashRing.prototype.createRange = function createRange(key, size, distinct) {
     if (size && returnnodes.length >= size) break;
   }
 
-  // as we might have reached the end of our sortedKeys array, and didn't fill
+  // As we might have reached the end of our sortedKeys array, and didn't fill
   // our returnnodes completely:
   if (!size || returnnodes.length < size) {
     for (i = 0, length = this.sortedKeys.length; i < length; i++) {
@@ -342,7 +345,7 @@ HashRing.prototype.createRange = function createRange(key, size, distinct) {
     }
   }
 
-  // now that we have collect all the nodes, we can return the range
+  // Now that we have collect all the nodes, we can return the range.
   return returnnodes;
 };
 
@@ -360,7 +363,7 @@ HashRing.prototype.generateKey = function generateKey(hash) {
 };
 
 /**
- * Changes the returned key to a `long value` by using the compare function
+ * Changes the returned key to a `long value` by using the compare function.
  *
  * @param {String} key The key that needs to be calculated
  * @param {Function} compare The calculation function
@@ -377,7 +380,7 @@ HashRing.prototype.hashValue = function hashValue(key, compare) {
 };
 
 /**
- * Generates a hash from a key
+ * Generates a hash from a key.
  *
  * @param {String} The key that needs to be transformed in to a hash.
  * @returns {String} The hashed key

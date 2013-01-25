@@ -1,6 +1,6 @@
 "use strict";
 
-var Hashring = require('../lib/hashring');
+var Hashring = require('../');
 
 module.exports = {
   'Library version': function () {

@@ -25,22 +25,25 @@ So you can give it a weight of 2 and the other servers a weight of 1.
 
 Creating a hash ring with only one server
 
-``` javascript
+```javascript
 var hashring = require('hashring');
+
 var ring = new hashring('192.168.0.102:11212');
 ```
 
 Creating a hash ring with multiple servers
 
-``` javascript
+```javascript
 var hashring = require('hashring');
+
 var ring = new hashring([ '192.168.0.102:11212', '192.168.0.103:11212', '192.168.0.104:11212']);
 ```
 
 Creating a hash ring with multiple servers and weights
 
-``` javascript
+```javascript
 var hashring = require('hashring');
+
 var ring = new hashring({
   '192.168.0.102:11212': 1
 , '192.168.0.103:11212': 2
@@ -50,8 +53,9 @@ var ring = new hashring({
 
 Creating a hash ring with multiple servers an vnodes selected per nodes
 
-``` javascript
+```javascript
 var hashring = require('hashring');
+
 var ring = new hashring({
   '192.168.0.102:11212': {"vnodes": 5}
 , '192.168.0.103:11212': {"vnodes": 10}
@@ -67,6 +71,7 @@ crypto module.
 
 ``` javascript
 var hashring = require('hashring');
+
 var ring = new hashring('192.168.0.102:11212', 'md5');
 ```
 
@@ -84,8 +89,8 @@ the variable name `ring` like I did the in the examples illustrated above.
 a.k.a key -> node look up, this is where all the magic is happening.
 
 ``` javascript
-ring.getNode('foo'); // => '192.168.0.104:11212'
-ring.getNode('pewpew'); // => '192.168.0.103:11212'
+ring.get('foo'); // => '192.168.0.104:11212'
+ring.get('pewpew'); // => '192.168.0.103:11212'
 ```
 
 **Replacing a server**
@@ -93,8 +98,8 @@ If you are experiencing downtime with one of your servers, you might want to
 `hot swap` with a new server.
 
 ``` javascript
-ring.replaceServer('192.168.0.104:11212','192.168.0.112:11212');
-ring.getNode('foo'); // => '192.168.0.112:11212'
+ring.replace('192.168.0.104:11212','192.168.0.112:11212');
+ring.get('foo'); // => '192.168.0.112:11212'
 ```
 
 **Add a server**
@@ -102,14 +107,14 @@ Adds a new server to the hash ring, but please note that this could cause a
 shift in current key -> server distribution.
 
 ``` javascript
-ring.addServer('192.168.0.102:11212');
+ring.add('192.168.0.102:11212');
 ```
 
 **Remove a server**
 Remove a server from the generated hash ring.
 
 ``` javascript
-ring.removeServer('192.168.0.102:11212');
+ring.remove('192.168.0.102:11212');
 ```
 
 For a more extensive documentation: http://3rd-eden.github.com/node-hashring/
