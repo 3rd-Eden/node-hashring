@@ -187,9 +187,9 @@ HashRing.prototype.getNodePosition = HashRing.prototype.position = function posi
 
   var keys = this.generateKey(key)
     , nodes = this.sortedKeys
-    , position = bisection(nodes, keys);
+    , pos = bisection(nodes, keys);
 
-  return position === nodes.length ? 0 : position;
+  return pos === nodes.length ? 0 : pos;
 };
 
 /**
@@ -422,6 +422,19 @@ HashRing.prototype.crc32HashKey = function crc32HashKey(str) {
     .map(function map(v) {
       return v.charCodeAt(0);
     });
+};
+
+/**
+ * End the HashRing, kill all references
+ *
+ * @api public
+ */
+HashRing.prototype.end = function end() {
+  this.cache.reset();
+  this.ring = {};
+
+  this.sortedKeys.length = 0;
+  this.nodes.length = 0;
 };
 
 /**
