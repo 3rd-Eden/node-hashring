@@ -83,6 +83,8 @@ function HashRing(args, algorithm, options) {
   // Overwrite the hashKey method if CRC32 is chosen.
   if (this.algorithm === 'crc32') {
     this.hashKey = this.crc32HashKey;
+  } else if (typeof this.algorithm === 'function') {
+    this.hashKey = this.algorithm;
   }
 
   this.generate();
@@ -439,8 +441,10 @@ HashRing.prototype.end = function end() {
 
 /**
  * Library version.
+ *
+ * @type {String}
  */
-HashRing.version = '0.0.7';
+HashRing.version = '0.0.8';
 
 /**
  * Expose the library.
