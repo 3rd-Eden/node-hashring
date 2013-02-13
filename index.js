@@ -41,7 +41,7 @@ function HashRing(args, algorithm, options) {
             weights[i] = args[i];
         } else {
           if ('weight' in args[i]) {
-            weights[i] = args[i].weigth;
+            weights[i] = args[i].weight;
           }
 
           if ('vnodes' in args[i]) {
