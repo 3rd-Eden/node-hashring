@@ -1,39 +1,46 @@
 {
-    "name": "hashring"
-  , "version": "0.0.8"
-  , "author": "Arnout Kazemier"
-  , "description": "A pure JavaScript hash ring based on libketama"
-  , "main": "./index.js"
-  , "keywords":[
-        "hashring"
-      , "hash ring"
-      , "hashing"
-      , "hash"
-      , "consistent hashing"
-      , "libketama"
-    ]
-  , "maintainers": [{
-        "name":"Arnout Kazemier"
-      , "email":"info@3rd-Eden.com"
-      , "web":"http://www.3rd-Eden.com"
-    }]
-  , "licenses": [{
-        "type": "MIT"
-      , "url": "http://github.com/3rd-Eden/node-hashring/blob/master/LICENSE"
-    }]
-  , "repositories": [{
-        "type": "git"
-      , "url" : "http://github.com/3rd-Eden/node-hashring.git"
-    }]
-  , "dependencies": {
-        "bisection": "",
-        "simple-lru-cache": "0.0.x"
+  "name": "hashring",
+  "version": "0.0.8",
+  "author": "Arnout Kazemier",
+  "description": "A pure JavaScript hash ring based on libketama",
+  "main": "./index.js",
+  "keywords": [
+    "hashring",
+    "hash ring",
+    "hashing",
+    "hash",
+    "consistent hashing",
+    "libketama"
+  ],
+  "maintainers": [
+    {
+      "name": "Arnout Kazemier",
+      "email": "info@3rd-Eden.com",
+      "web": "http://www.3rd-Eden.com"
     }
-  , "devDependencies": {
-        "mocha": "*"
-      , "should": "*"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/3rd-Eden/node-hashring/blob/master/LICENSE"
     }
-  , "scripts": {
-        "test": "make test"
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "http://github.com/3rd-Eden/node-hashring.git"
     }
+  ],
+  "dependencies": {
+    "bisection": "",
+    "simple-lru-cache": "0.0.x",
+    "connection-parse": "0.0.2"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "scripts": {
+    "test": "make test"
+  }
 }
