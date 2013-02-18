@@ -1,34 +1,34 @@
 'use strict';
 
 var hashValue = require('./build/Release/hashvalue')
+  , SimpleCache = require("simple-lru-cache")
   , parse = require('connection-parse')
   , crypto = require('crypto');
 
-function HashRing(servers) {
-  this.algorithm = 'md5';
+function HashRing(servers, algorithm, options) {
+  options = options || {};
+
+  this.algorithm = algorithm || 'md5';
 
   // Private propperties
-  this.servers = parse(servers).servers;
   this.ring = [];
   this.size = 0;
+  this.servers = parse(servers).servers;
+  this.cache = new SimpleCache({
+    maxSize: options.maxCacheSize || 5000
+  });
 
+  // Override our hasher, which defaults to hashing using the `crypto` module by
+  // default.
+  if ('crc32' === this.algorithm) {
+    this.hash = this.crc32;
+  } else if ('function' === typeof this.algorithm) {
+    this.hash = this.algorithm;
+  }
+
+  // Initialize the hash ring
   this.generate();
 }
-
-HashRing.prototype.digest = function digest(key) {
-  return crypto.createHash(this.algorithm)
-    .update(key +'', 'utf8').digest()
-    .split('')
-    .map(function charCode(char) {
-      return char.charCodeAt(0);
-    });
-};
-
-HashRing.prototype.hashValue = function hasher(key) {
-  var x = this.digest(key);
-
-  return hashValue.hash(x[3], x[2], x[1], x[0]);
-};
 
 HashRing.prototype.generate = function generate() {
   var servers = this.servers
@@ -96,6 +96,22 @@ HashRing.prototype.get = function get(key) {
 
     if (low > high) return ring[0].server;
   }
+};
+
+HashRing.prototype.hash = function hash(key) {
+  return crypto.createHash(this.algorithm).update().digest();
+};
+
+HashRing.prototype.digest = function digest(key) {
+  return this.hash(key +'').toString().split('').map(function charCode(char) {
+    return char.charCodeAt(0);
+  });
+};
+
+HashRing.prototype.hashValue = function hasher(key) {
+  var x = this.digest(key);
+
+  return hashValue.hash(x[3], x[2], x[1], x[0]);
 };
 
 function Node(point, server) {
