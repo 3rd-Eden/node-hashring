@@ -56,7 +56,7 @@ module.exports = {
     });
 
     ring.nodes.should.have.length(3);
-    ring.sortedKeys.length.should.be.equal((4+3+5)*3)
+    ring.sortedKeys.length.should.be.equal((4+3+5)*3);
   }
 
 , 'Constructing with a different algorithm': function () {
@@ -78,7 +78,7 @@ module.exports = {
 
 , 'Adding server after zero-argument constructor': function () {
     var ring = new Hashring();
-    ring.addServer('192.168.0.102:11212');
+    ring.add('192.168.0.102:11212');
 
     ring.nodes.should.have.length(1);
     ring.sortedKeys.length.should.be.above(1);
@@ -92,24 +92,24 @@ module.exports = {
       , '192.168.0.104:11212'
     ]);
 
-    ring.nodes.indexOf(ring.getNode('foo')).should.be.above(-1);
+    ring.nodes.indexOf(ring.get('foo')).should.be.above(-1);
 
     // NOTE we are going to do some flaky testing ;P
-    ring.getNode('foo').should.equal('192.168.0.104:11212');
-    ring.getNode('pewpew').should.equal('192.168.0.103:11212');
+    ring.get('foo').should.equal('192.168.0.104:11212');
+    ring.get('pewpew').should.equal('192.168.0.103:11212');
 
     // we are not gonna verify the results we are just gonna test if we don't
     // fuck something up in the code, so it throws errors or whatever
 
     // unicode keys, just because people roll like that
-    ring.nodes.indexOf(ring.getNode('привет мир, Memcached и nodejs для победы')).should.be.above(-1);
+    ring.nodes.indexOf(ring.get('привет мир, Memcached и nodejs для победы')).should.be.above(-1);
 
     // other odd keys
-    ring.nodes.indexOf(ring.getNode(1)).should.be.above(-1);
-    ring.nodes.indexOf(ring.getNode(0)).should.be.above(-1);
-    ring.nodes.indexOf(ring.getNode([])).should.be.above(-1);
-    ring.nodes.indexOf(ring.getNode({wtf:'lol'})).should.be.above(-1);
-    ring.getNode({wtf:'lol'}).should.equal(ring.getNode({wtf:'amazing .toStringing'}));
+    ring.nodes.indexOf(ring.get(1)).should.be.above(-1);
+    ring.nodes.indexOf(ring.get(0)).should.be.above(-1);
+    ring.nodes.indexOf(ring.get([])).should.be.above(-1);
+    ring.nodes.indexOf(ring.get({wtf:'lol'})).should.be.above(-1);
+    ring.get({wtf:'lol'}).should.equal(ring.get({wtf:'amazing .toStringing'}));
   }
 
 , 'Replacing servers': function () {
@@ -118,13 +118,13 @@ module.exports = {
         , '192.168.0.103:11212'
         , '192.168.0.104:11212'
       ])
-      , amazon = ring.getNode('justdied')
+      , amazon = ring.get('justdied')
       , skynet = '192.168.0.128:11212';
 
-    ring.replaceServer(amazon, skynet);
+    ring.replace(amazon, skynet);
     ring.cache.get("justdied").should.equal(skynet);
     ring.cache.reset(); // clear cache
-    ring.getNode('justdied').should.equal(skynet);
+    ring.get('justdied').should.equal(skynet);
   }
 
 , 'Removing servers': function () {
@@ -134,13 +134,13 @@ module.exports = {
       , '192.168.0.104:11212'
     ]);
 
-    ring.removeServer('192.168.0.102:11212');
+    ring.remove('192.168.0.102:11212');
     ring.nodes.indexOf('192.168.0.102:11212').should.equal(-1);
   }
 
 , 'Removing last server': function () {
     var ring = new Hashring('192.168.0.102:11212');
-    ring.removeServer('192.168.0.102:11212');
+    ring.remove('192.168.0.102:11212');
 
     ring.nodes.should.have.length(0);
     ring.sortedKeys.should.have.length(0);
@@ -184,7 +184,7 @@ module.exports = {
 
     for (i = 0, len = iterations; i < len; i++) {
       word = genCode(10);
-      node = ring.getNode(word);
+      node = ring.get(word);
       counts[node] = counts[node] || 0;
       counts[node]++;
     }
