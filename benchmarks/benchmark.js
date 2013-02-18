@@ -1,87 +1,94 @@
+'use strict';
+
 /**
- * Benchmark dependencies
+ * Benchmark dependencies.
  */
-var Benchmark = require('benchmark')
+var benchmark = require('benchmark')
   , microtime = require('microtime');
-  
+
 /**
- * Different hashring drivers
+ * Different hashring drivers.
  */
-var hashring = require('hashring')
-  , hash_ring = require('hash_ring')
+var HashRing = require('../')
+  , Hash_ring = require('hash_ring')
   , nodes = {'192.168.0.102:11212': 1, '192.168.0.103:11212': 1, '192.168.0.104:11212': 1};
 
 /**
- * prebuild hashrings
+ * Logger.
  */
-var ring1 = new hashring(nodes)
-  , ring2 = new hash_ring(nodes);
+var logger = new(require('devnull'))({ timestamp: false, namespacing: 0 });
 
 /**
- * Benchmark the constructing and generating of a hashring
+ * prebuild hashrings.
  */
-var constructing = new Benchmark.Suite;
-constructing
-  .add('hashring', function(){
-    var r = new hashring(nodes);
-  })
-  .add('hash_ring', function(){
-    var r = new hash_ring(nodes);
-  })
-  .on('cycle', function(bench){
-    console.log("Executing benchmark: " + bench);
-  })
-  .on('complete', function(){
-    console.log(this.filter('fastest').pluck('name') + ' has the fastest constructor');
-    
-    // run the next benchmark if it exists
-    var next = benchmarks.shift();
-    if (next && next.run) next.run();
-  });
-
-var random = new Benchmark.Suite;
-random
-  .add('hashring', function(){
-    ring1.getNode('key' + Math.random())
-  })
-  .add('hash_ring', function(){
-    ring2.getNode('key' + Math.random())
-  })
-  .on('cycle', function(bench){
-    console.log("Executing benchmark: " + bench);
-  })
-  .on('complete', function(){
-    console.log(this.filter('fastest').pluck('name') + ' has the fastest random key getNode');
-    
-    // run the next benchmark if it exists
-    var next = benchmarks.shift();
-    if (next && next.run) next.run();
-  });
-
-var same = new Benchmark.Suite;
-same
-  .add('hashring', function(){
-    ring1.getNode('key')
-  })
-  .add('hash_ring', function(){
-    ring2.getNode('key')
-  })
-  .on('cycle', function(bench){
-    console.log("Executing benchmark: " + bench);
-  })
-  .on('complete', function(){
-    console.log(this.filter('fastest').pluck('name') + ' has the fastest same key getNode');
-    
-    // run the next benchmark if it exists
-    var next = benchmarks.shift();
-    if (next && next.run) next.run();
-  });
-
+var ring1 = new HashRing(nodes)
+  , ring2 = new Hash_ring(nodes);
 
 /**
- * Add all benchmarks that that need to be run.
+ * Benchmark the constructing and generating of a hashring.
  */
-var benchmarks = [constructing,random,same];
+(
+  new benchmark.Suite()
+).add('hashring', function(){
+  var r = new HashRing(nodes);
+}).add('hash_ring', function(){
+  var r = new Hash_ring(nodes);
+}).on('cycle', function cycle(e) {
+  var details = e.target;
 
-// run benchmarks
-if (benchmarks.length) benchmarks.shift().run();
+  logger.log('Finished benchmarking: "%s"', details.name);
+  logger.metric('Count (%d), Cycles (%d), Elapsed (%d), Hz (%d)'
+    , details.count
+    , details.cycles
+    , details.times.elapsed
+    , details.hz
+  );
+}).on('complete', function completed() {
+  logger.info('Benchmark: "%s" is was the fastest.'
+    , this.filter('fastest').pluck('name')
+  );
+}).run();
+
+(
+  new benchmark.Suite()
+).add('hashring', function(){
+  ring1.get('key' + Math.random());
+}).add('hash_ring', function(){
+  ring2.getNode('key' + Math.random());
+}).on('cycle', function cycle(e) {
+  var details = e.target;
+
+  logger.log('Finished benchmarking: "%s"', details.name);
+  logger.metric('Count (%d), Cycles (%d), Elapsed (%d), Hz (%d)'
+    , details.count
+    , details.cycles
+    , details.times.elapsed
+    , details.hz
+  );
+}).on('complete', function completed() {
+  logger.info('Benchmark: "%s" is was the fastest.'
+    , this.filter('fastest').pluck('name')
+  );
+}).run();
+
+(
+  new benchmark.Suite()
+).add('hashring', function(){
+  ring1.get('key');
+}).add('hash_ring', function(){
+  ring2.getNode('key');
+}).on('cycle', function cycle(e) {
+  var details = e.target;
+
+  logger.log('Finished benchmarking: "%s"', details.name);
+  logger.metric('Count (%d), Cycles (%d), Elapsed (%d), Hz (%d)'
+    , details.count
+    , details.cycles
+    , details.times.elapsed
+    , details.hz
+  );
+}).on('complete', function completed() {
+  logger.info('Benchmark: "%s" is was the fastest.'
+    , this.filter('fastest').pluck('name')
+  );
+}).run();
