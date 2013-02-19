@@ -149,7 +149,23 @@ module.exports = {
     ring.ring.should.have.length(0);
   }
 
-  // kindly lended from `node-hash-ring` :)
+, 'Compatiblity': function () {
+    var fixture = require('fs').readFileSync(__dirname +'/fixture.txt')
+                               .toString().split('\n');
+
+    var ring = new Hashring({
+        '0.0.0.1' : 1,
+        '0.0.0.2' : 2,
+        '0.0.0.3' : 3,
+        '0.0.0.4' : 4,
+        '0.0.0.5' : 5
+    }, 'md5');
+
+    for (var i=0; i < 100000; i++){
+      (i + ' ' + ring.get(i)).should.equal(fixture[i]);
+    }
+  }
+
 , 'Distribution': function () {
     var iterations = 100000
       , nodes = {
