@@ -10,9 +10,8 @@ module.exports = {
 , 'Constructing with a string': function () {
     var ring = new Hashring('192.168.0.102:11212');
 
-    ring.nodes.should.have.length(1);
-    ring.sortedKeys.length.should.be.above(1);
-    Object.keys(ring.weights).should.have.length(0);
+    ring.servers.should.have.length(1);
+    ring.ring.length.should.be.above(1);
   }
 
 , 'Constructing with a array': function () {
@@ -22,67 +21,66 @@ module.exports = {
       , '192.168.0.104:11212'
     ]);
 
-    ring.nodes.should.have.length(3);
-    ring.sortedKeys.length.should.be.above(1);
-    Object.keys(ring.weights).should.have.length(0);
+    ring.servers.should.have.length(3);
+    ring.ring.length.should.be.above(1);
   }
 
 , 'Constructing with a object': function () {
     var ring = new Hashring({
-        '192.168.0.102:11212': 1
+        '192.168.0.102:11212': 2
       , '192.168.0.103:11212': 2
-      , '192.168.0.104:11212': 1
+      , '192.168.0.104:11212': 2
     });
 
-    ring.nodes.should.have.length(3);
-    ring.sortedKeys.length.should.be.above(1);
-    Object.keys(ring.weights).should.have.length(3);
+    ring.servers.should.have.length(3);
+    ring.ring.length.should.be.above(1);
+
+    ring.servers.forEach(function (server) {
+      server.weight.should.be.above(1);
+    });
   }
 
 , 'Constructing with a object with pernode vnodes': function(){
     var ring = new Hashring({
-        '192.168.0.102:11212': {"vnodes":40}
-      , '192.168.0.103:11212': {"vnodes":50}
-      , '192.168.0.104:11212': {"vnodes":5}
+        '192.168.0.102:11212': { 'vnodes': 40 }
+      , '192.168.0.103:11212': { 'vnodes': 50 }
+      , '192.168.0.104:11212': { 'vnodes': 5 }
     });
 
-    ring.nodes.should.have.length(3);
-    ring.sortedKeys.length.should.be.equal((40+50+5)*3);
+    ring.servers.should.have.length(3);
+    ring.ring.length.should.be.equal((40 + 50 + 5) * 3);
 
     ring = new Hashring({
-        '192.168.0.102:11212': {"vnodes":4}
-      , '192.168.0.103:11212': {"vnodes":3}
-      , '192.168.0.104:11212': {"vnodes":5}
+        '192.168.0.102:11212': { 'vnodes': 4 }
+      , '192.168.0.103:11212': { 'vnodes': 3 }
+      , '192.168.0.104:11212': { 'vnodes': 5 }
     });
 
-    ring.nodes.should.have.length(3);
-    ring.sortedKeys.length.should.be.equal((4+3+5)*3);
+    ring.servers.should.have.length(3);
+    ring.ring.length.should.be.equal((4 + 3 + 5) * 3);
   }
 
 , 'Constructing with a different algorithm': function () {
     var ring = new Hashring('192.168.0.102:11212', 'md5');
 
-    ring.nodes.should.have.length(1);
+    ring.servers.should.have.length(1);
     ring.algorithm.should.equal('md5');
-    ring.sortedKeys.length.should.be.above(1);
-    Object.keys(ring.weights).should.have.length(0);
+    ring.ring.length.should.be.above(1);
   }
 
 , 'Constructing with no arguments': function () {
     var ring = new Hashring();
 
-    ring.nodes.should.have.length(0);
-    ring.sortedKeys.should.have.length(0);
-    Object.keys(ring.weights).should.have.length(0);
+    ring.servers.should.have.length(0);
+    ring.ring.should.have.length(0);
   }
 
 , 'Adding server after zero-argument constructor': function () {
     var ring = new Hashring();
     ring.add('192.168.0.102:11212');
 
-    ring.nodes.should.have.length(1);
-    ring.sortedKeys.length.should.be.above(1);
-    Object.keys(ring.weights).should.have.length(0);
+    ring.servers.should.have.length(1);
+    ring.ring.length.should.be.above(1);
   }
 
 , 'Looking up keys': function () {
@@ -92,27 +90,28 @@ module.exports = {
       , '192.168.0.104:11212'
     ]);
 
-    ring.nodes.indexOf(ring.get('foo')).should.be.above(-1);
+    ring.find(ring.hashValue('foo')).should.be.above(-1);
 
     // NOTE we are going to do some flaky testing ;P
-    ring.get('foo').should.equal('192.168.0.104:11212');
-    ring.get('pewpew').should.equal('192.168.0.103:11212');
+    ring.get('foo').should.equal('192.168.0.102:11212');
+    ring.get('pewpew').should.equal('192.168.0.104:11212');
 
     // we are not gonna verify the results we are just gonna test if we don't
     // fuck something up in the code, so it throws errors or whatever
 
     // unicode keys, just because people roll like that
-    ring.nodes.indexOf(ring.get('привет мир, Memcached и nodejs для победы')).should.be.above(-1);
+    ring.find(ring.hashValue('привет мир, Memcached и nodejs для победы')).should.be.above(-1);
 
     // other odd keys
-    ring.nodes.indexOf(ring.get(1)).should.be.above(-1);
-    ring.nodes.indexOf(ring.get(0)).should.be.above(-1);
-    ring.nodes.indexOf(ring.get([])).should.be.above(-1);
-    ring.nodes.indexOf(ring.get({wtf:'lol'})).should.be.above(-1);
+    ring.find(ring.hashValue(1)).should.be.above(-1);
+    ring.find(ring.hashValue(0)).should.be.above(-1);
+    ring.find(ring.hashValue([])).should.be.above(-1);
+    ring.find(ring.hashValue({wtf:'lol'})).should.be.above(-1);
+
     ring.get({wtf:'lol'}).should.equal(ring.get({wtf:'amazing .toStringing'}));
   }
 
-, 'Replacing servers': function () {
+, 'Swapping servers': function () {
     var ring = new Hashring([
           '192.168.0.102:11212'
         , '192.168.0.103:11212'
@@ -121,9 +120,11 @@ module.exports = {
       , amazon = ring.get('justdied')
       , skynet = '192.168.0.128:11212';
 
-    ring.replace(amazon, skynet);
+    ring.swap(amazon, skynet);
     ring.cache.get("justdied").should.equal(skynet);
-    ring.cache.reset(); // clear cache
+
+    // After a cleared cache, it should still resolve to the same server
+    ring.cache.reset();
     ring.get('justdied').should.equal(skynet);
   }
 
@@ -135,16 +136,17 @@ module.exports = {
     ]);
 
     ring.remove('192.168.0.102:11212');
-    ring.nodes.indexOf('192.168.0.102:11212').should.equal(-1);
+    ring.ring.forEach(function (node) {
+      node.server.should.not.equal('192.168.0.102:11212');
+    });
   }
 
 , 'Removing last server': function () {
     var ring = new Hashring('192.168.0.102:11212');
     ring.remove('192.168.0.102:11212');
 
-    ring.nodes.should.have.length(0);
-    ring.sortedKeys.should.have.length(0);
-    Object.keys(ring.weights).should.have.length(0);
+    ring.servers.should.have.length(0);
+    ring.ring.should.have.length(0);
   }
 
   // kindly lended from `node-hash-ring` :)
