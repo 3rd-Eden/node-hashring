@@ -1,6 +1,6 @@
 ALL_TESTS = $(shell find tests/ -name '*.test.js')
 REPORTER = spec
-UI = exports
+UI = bdd
 
 run-tests:
 	@./node_modules/.bin/mocha \
