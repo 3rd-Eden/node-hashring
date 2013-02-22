@@ -36,7 +36,7 @@ function HashRing(servers, algorithm, options) {
   // These properties can be configured
   this.algorithm = algorithm || 'md5';
   this.vnode = options.vnode_count || 40;
-  this.numbers = options.compatibility
+  this.replicas = options.compatibility
     ? (options.compatibility === 'hash_ring' ? 3 : 4)
     : 4;
 
@@ -98,15 +98,15 @@ HashRing.prototype.continuum = function generate() {
       // There's a slight difference between libketama and python's hash_ring
       // module, libketama creates 160 points per server:
       //
-      //   40 hashes (vnodes) and 4 numbers per hash = 160 points per server
+      //   40 hashes (vnodes) and 4 replicas per hash = 160 points per server
       //
       // The hash_ring module only uses 120 points per server:
       //
-      //   40 hashes (vnodes) and 3 numbers per hash = 160 points per server
+      //   40 hashes (vnodes) and 3 replicas per hash = 160 points per server
       //
       // And that's the only difference between the original ketama hash and the
       // hash_ring package. Small, but important.
-      for (var j = 0; j < self.numbers; j++) {
+      for (var j = 0; j < self.replicas; j++) {
         key = hashValue.hash(x[3 + j * 4], x[2 + j * 4], x[1 + j * 4], x[j * 4]);
         self.ring[index] = new Node(key, server.string);
         index++;

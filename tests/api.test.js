@@ -76,6 +76,13 @@ describe('HashRing', function () {
       ring.ring.length.should.be.above(1);
     });
 
+    it('generates the correct amount of points', function () {
+      var ring = new Hashring({
+          '127.0.0.1:11211': 600
+        , '127.0.0.1:11212': 400
+      });
+    });
+
     describe("#add", function () {
       it('adds server after zero-argument constructor', function () {
         var ring = new Hashring();
@@ -112,7 +119,31 @@ describe('HashRing', function () {
         ring.find(ring.hashValue([])).should.be.above(-1);
         ring.find(ring.hashValue({wtf:'lol'})).should.be.above(-1);
 
+        // this should work as both objects are converted to [object Object] by
+        // the .toString() constructor
         ring.get({wtf:'lol'}).should.equal(ring.get({wtf:'amazing .toStringing'}));
+      });
+    });
+
+    describe('#hashValue', function () {
+      it('should create the correct long value for a given key', function () {
+        var ring = new Hashring({
+            '127.0.0.1:11211': 600
+          , '127.0.0.1:11212': 400
+        });
+
+        ring.hashValue('test').should.equal(3446378249);
+      });
+    });
+
+    describe('#find', function () {
+      it('should find the correct long value for a given key', function () {
+        var ring = new Hashring({
+            '127.0.0.1:11211': 600
+          , '127.0.0.1:11212': 400
+        });
+
+        ring.ring[ring.find(ring.hashValue('test'))].value.should.equal(3454255383);
       });
     });
 

@@ -4,7 +4,7 @@ var Hashring = require('../');
 
 describe('Hashring distributions', function () {
   it('hashes to the exact same output as hash_ring for python', function () {
-    var fixture = require('fs').readFileSync(__dirname +'/fixture.txt')
+    var fixture = require('fs').readFileSync(__dirname +'/hash_ring.txt')
                                .toString().split('\n');
 
     var ring = new Hashring({
