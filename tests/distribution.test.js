@@ -13,6 +13,23 @@ describe('Hashring distributions', function () {
         '0.0.0.3' : 3,
         '0.0.0.4' : 4,
         '0.0.0.5' : 5
+    }, 'md5', { compatibility: 'hash_ring' });
+
+    for (var i=0; i < 100000; i++){
+      (i + ' ' + ring.get(i)).should.equal(fixture[i]);
+    }
+  });
+
+  it('hashes to the exact same output as ketama for python', function () {
+    var fixture = require('fs').readFileSync(__dirname +'/ketama.txt')
+                               .toString().split('\n');
+
+    var ring = new Hashring({
+        '0.0.0.1' : 1,
+        '0.0.0.2' : 2,
+        '0.0.0.3' : 3,
+        '0.0.0.4' : 4,
+        '0.0.0.5' : 5
     }, 'md5');
 
     for (var i=0; i < 100000; i++){
@@ -26,6 +43,7 @@ describe('Hashring distributions', function () {
             '192.168.0.102:11212': 1
           , '192.168.0.103:11212': 1
           , '192.168.0.104:11212': 1
+          , '192.168.0.101:11212': 1
         }
       , ring = new Hashring(nodes);
 

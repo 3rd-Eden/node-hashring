@@ -36,6 +36,9 @@ function HashRing(servers, algorithm, options) {
   // These properties can be configured
   this.algorithm = algorithm || 'md5';
   this.vnode = options.vnode_count || 40;
+  this.numbers = options.compatibility
+    ? (options.compatibility === 'hash_ring' ? 3 : 4)
+    : 4;
 
   // Private properties
   var connections = parse(servers);
@@ -72,7 +75,7 @@ HashRing.prototype.continuum = function generate() {
   var servers = this.servers
     , self = this
     , index = 0
-    , total;
+    , total = 0;
 
   // No servers, bailout
   if (!servers.length) return this;
@@ -92,7 +95,18 @@ HashRing.prototype.continuum = function generate() {
     for (var i = 0; i < length; i++) {
       x = self.digest(server.string +'-'+ i);
 
-      for (var j = 0; j < 3; j++) {
+      // There's a slight difference between libketama and python's hash_ring
+      // module, libketama creates 160 points per server:
+      //
+      //   40 hashes (vnodes) and 4 numbers per hash = 160 points per server
+      //
+      // The hash_ring module only uses 120 points per server:
+      //
+      //   40 hashes (vnodes) and 3 numbers per hash = 160 points per server
+      //
+      // And that's the only difference between the original ketama hash and the
+      // hash_ring package. Small, but important.
+      for (var j = 0; j < self.numbers; j++) {
         key = hashValue.hash(x[3 + j * 4], x[2 + j * 4], x[1 + j * 4], x[j * 4]);
         self.ring[index] = new Node(key, server.string);
         index++;
@@ -209,6 +223,50 @@ HashRing.prototype.hashValue = function hasher(key) {
  * ring specific. Add, remove or replace servers with as less disruption as
  * possible.
  */
+
+HashRing.prototype.range = function range(key, size, unique) {
+  if (!this.size) return [];
+
+  size = size || this.servers.length;
+  unique = unique || 'undefined' === typeof unique;
+
+  var position = this.find(this.hashValue(key))
+    , length = this.ring.length
+    , servers = []
+    , node;
+
+  // Start searching for servers from the postion of the key to the end of
+  // HashRing.
+  for (var i = position; i < length; i++) {
+    node = this.ring[i];
+
+    // Do we need to make sure that we retrieve a unique list of servers?
+    if (unique) {
+      if (!~servers.indexOf(node.server)) servers.push(node.server);
+    } else {
+      servers.push(node.server);
+    }
+
+    if (servers.length === size) return servers;
+  }
+
+  // Not enough results yet, so iterate from the start of the hash ring to the
+  // position of the hash ring. So we reach full circle again.
+  for (i = 0; i < position; i++) {
+    node = this.ring[i];
+
+    // Do we need to make sure that we retrieve a unique list of servers?
+    if (unique) {
+      if (!~servers.indexOf(node.server)) servers.push(node.server);
+    } else {
+      servers.push(node.server);
+    }
+
+    if (servers.length === size) return servers;
+  }
+
+  return servers;
+};
 
 /**
  * Hotswap identical servers with each other. This doesn't require the cache to
