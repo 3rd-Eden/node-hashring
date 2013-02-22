@@ -34,8 +34,21 @@ function HashRing(servers, algorithm, options) {
   options = options || {};
 
   // These properties can be configured
-  this.algorithm = algorithm || 'md5';
-  this.vnode = options.vnode_count || 40;
+  this.pps = options['points per server'] || 160;     // Points per server
+  this.vnode = options['vnode count'] || 40;          // Virtual nodes per server
+  this.algorithm = algorithm || 'md5';                // Hashing algorithm
+
+  // There's a slight difference between libketama and python's hash_ring
+  // module, libketama creates 160 points per server:
+  //
+  //   40 hashes (vnodes) and 4 replicas per hash = 160 points per server
+  //
+  // The hash_ring module only uses 120 points per server:
+  //
+  //   40 hashes (vnodes) and 3 replicas per hash = 160 points per server
+  //
+  // And that's the only difference between the original ketama hash and the
+  // hash_ring package. Small, but important.
   this.replicas = options.compatibility
     ? (options.compatibility === 'hash_ring' ? 3 : 4)
     : 4;
@@ -95,17 +108,6 @@ HashRing.prototype.continuum = function generate() {
     for (var i = 0; i < length; i++) {
       x = self.digest(server.string +'-'+ i);
 
-      // There's a slight difference between libketama and python's hash_ring
-      // module, libketama creates 160 points per server:
-      //
-      //   40 hashes (vnodes) and 4 replicas per hash = 160 points per server
-      //
-      // The hash_ring module only uses 120 points per server:
-      //
-      //   40 hashes (vnodes) and 3 replicas per hash = 160 points per server
-      //
-      // And that's the only difference between the original ketama hash and the
-      // hash_ring package. Small, but important.
       for (var j = 0; j < self.replicas; j++) {
         key = hashValue.hash(x[3 + j * 4], x[2 + j * 4], x[1 + j * 4], x[j * 4]);
         self.ring[index] = new Node(key, server.string);
@@ -219,11 +221,20 @@ HashRing.prototype.hashValue = function hasher(key) {
 
 /**
  * None ketama:
+ *
  * The following changes are not ported from the ketama algorithm and are hash
  * ring specific. Add, remove or replace servers with as less disruption as
  * possible.
  */
 
+/**
+ * Get a range of different servers.
+ *
+ * @param {String} key
+ * @param {Number} size Amount of servers it should return
+ * @param {Boolean} unique Return only unique keys
+ * @api public
+ */
 HashRing.prototype.range = function range(key, size, unique) {
   if (!this.size) return [];
 
@@ -266,6 +277,34 @@ HashRing.prototype.range = function range(key, size, unique) {
   }
 
   return servers;
+};
+
+/**
+ * Returns the points per server.
+ *
+ * @param {String} server Optional server to filter down
+ * @returns {Object} server -> Array(points)
+ * @api public
+ */
+HashRing.prototype.points = function points(servers) {
+  servers = Array.isArray(servers) ? servers : Object.keys(this.vnodes);
+
+  var nodes = Object.create(null)
+    , node;
+
+  servers.forEach(function servers(server) {
+    nodes[server] = [];
+  });
+
+  for (var i = 0; i < this.size; i++) {
+    node = this.ring[i];
+
+    if (node.server in nodes) {
+      nodes[node.server].push(node.value);
+    }
+  }
+
+  return nodes;
 };
 
 /**

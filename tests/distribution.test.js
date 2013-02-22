@@ -43,7 +43,6 @@ describe('Hashring distributions', function () {
             '192.168.0.102:11212': 1
           , '192.168.0.103:11212': 1
           , '192.168.0.104:11212': 1
-          , '192.168.0.101:11212': 1
         }
       , ring = new Hashring(nodes);
 

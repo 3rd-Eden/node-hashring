@@ -7,6 +7,23 @@ describe('HashRing', function () {
     Hashring.version.should.match(/^\d+\.\d+\.\d+$/);
   });
 
+  it('libmemcached compatiblity', function () {
+    var ring = new Hashring({
+      '10.0.1.1:11211': 600,
+      '10.0.1.2:11211': 300,
+      '10.0.1.3:11211': 200,
+      '10.0.1.4:11211': 350,
+      '10.0.1.5:11211': 1000,
+      '10.0.1.6:11211': 800,
+      '10.0.1.7:11211': 950,
+      '10.0.1.8:11211': 100
+    });
+
+    // VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets us
+    // test the boundary wraparound.
+    ring.find(ring.hashValue('VDEAAAAA')).should.equal(0);
+  });
+
   describe('API', function () {
     it('constructs with a string', function () {
       var ring = new Hashring('192.168.0.102:11212');
@@ -49,7 +66,7 @@ describe('HashRing', function () {
       });
 
       ring.servers.should.have.length(3);
-      ring.ring.length.should.be.equal((40 + 50 + 5) * 3);
+      ring.ring.length.should.be.equal((40 + 50 + 5) * ring.replicas);
 
       ring = new Hashring({
           '192.168.0.102:11212': { 'vnodes': 4 }
@@ -81,6 +98,9 @@ describe('HashRing', function () {
           '127.0.0.1:11211': 600
         , '127.0.0.1:11212': 400
       });
+
+      var points = ring.points();
+      console.log(points['127.0.0.1:11211'].length);
     });
 
     describe("#add", function () {
@@ -105,7 +125,7 @@ describe('HashRing', function () {
 
         // NOTE we are going to do some flaky testing ;P
         ring.get('foo').should.equal('192.168.0.102:11212');
-        ring.get('pewpew').should.equal('192.168.0.104:11212');
+        ring.get('pewpew').should.equal('192.168.0.103:11212');
 
         // we are not gonna verify the results we are just gonna test if we don't
         // fuck something up in the code, so it throws errors or whatever
