@@ -1,134 +1,226 @@
-## hashring [![BuildStatus](https://secure.travis-ci.org/3rd-Eden/node-hashring.png?branch=master)](http://travis-ci.org/3rd-Eden/node-hashring)
+# HashRing
 
-Hash ring provides consistent hashing based on the `libketema` library.
+The HashRing module provides consistent hashing that is compatible with the
+original libketama library that was developed at last.fm. In addition to beeing
+compatible with `libketama` it's also compatible with the `hash_ring` module for
+Python. See the compatiblity section of the API for more details on this.
 
-### Installation
+### Build status
 
-You can either install it using the Node Package Manager (NPM)
+[![BuildStatus](https://secure.travis-ci.org/3rd-Eden/node-hashring.png?branch=master)](http://travis-ci.org/3rd-Eden/node-hashring)
 
-    npm install hashring
+## Installation
 
-Or fork this repository to your machine
+The advised installation of module is done through the Node package manager (npm).
 
-    git clone git://github.com/3rd-Eden/node-hashring.git hashring
-
-### Basic usage
-
-The constructor is designed to handle multiple arguments types as the hash ring
-can be used for different use cases. You have the ability to use a `String` to
-add a single server, a `Array` to provide multiple servers or an `Object` to
-provide servers with a custom weight. The weight can be used to give a server a
-bigger distribution in the hash ring. For example you have 3 machines, 2 of
-those machines have 8 gig memory and one has 32 gig of memory because the last
-server has more memory you might it to handle more keys than the other server.
-So you can give it a weight of 2 and the other servers a weight of 1.
-
-Creating a hash ring with only one server
-
-```javascript
-var hashring = require('hashring');
-
-var ring = new hashring('192.168.0.102:11212');
+```
+npm install hashring --save
 ```
 
-Creating a hash ring with multiple servers
+The `--save` parameter tells npm that it should automatically add the module to
+the `dependencies` field in your package.json.
 
-```javascript
-var hashring = require('hashring');
+## Usage
 
-var ring = new hashring([ '192.168.0.102:11212', '192.168.0.103:11212', '192.168.0.104:11212']);
+The HashRing constructor is designed to handle different argument types as a
+consistent hash ring can be use for different use cases. You can supply the
+constructor with:
+
+#### String
+
+A single server, possible, but pointless in most cases if you only use one
+server, then done use the HashRing at all, it only adds overhead.
+
+```js
+var ring = new HashRing('127.0.0.1:11211');
 ```
 
-Creating a hash ring with multiple servers and weights
+#### Array
 
-```javascript
+Multiple servers for the HashRing.
+
+```js
+var ring = new HashRing(['127.0.0.1:11211', '127.0.0.2:11211']);
+```
+
+#### Object
+
+An Object where the keys of the Object are the servers and the value can be a
+`Number` and it will be seen as weight for server. The value can also be an
+Object. Where the key can be a weight or a vnode.
+
+Weights or vnodes are used to give servers a bigger distribution in the
+HashRing. For example you have 3 servers where you want to distribute your keys
+over but not all servers are equal in capacity as 2 of those machines have 200mb
+of memory and the other has 3.2 gig of memory. The last server is substantially
+bigger and there for should receive a greater distrubtion in the ring.
+
+For a rule of thumb use the amount of memory as weight:
+
+```js
 var hashring = require('hashring');
 
 var ring = new hashring({
-  '192.168.0.102:11212': 1
-, '192.168.0.103:11212': 2
-, '192.168.0.104:11212': 1
+  '127.0.0.1:11211': 200,
+  '127.0.0.2:11211': { weight: 200 }, // same as above
+  '127.0.0.3:11211': 3200
 });
 ```
 
-Creating a hash ring with multiple servers an vnodes selected per nodes
+If you want create a server with multiple vnodes (virtual nodes):
 
-```javascript
+```js
 var hashring = require('hashring');
 
 var ring = new hashring({
-  '192.168.0.102:11212': {"vnodes": 5}
-, '192.168.0.103:11212': {"vnodes": 10}
-, '192.168.0.104:11212': {"vnodes": 7}
+  '127.0.0.1:11211': { vnodes: 50 },
+  '127.0.0.2:11211': { vnodes: 200 },
+  '127.0.0.3:11211': { vnodes: 100 }
 });
 ```
-Optionaly you could add the weigth property to the object.
 
-By default the hash ring uses a JavaScript crc32 implementation hashing
-algorithm. But this can be overwritten by adding a second argument to the
-constructor. This can be anything that is supported as hashing algorithm by the
-crypto module.
+### Algorithm
 
-```javascript
-var hashring = require('hashring');
+With the second argument you can configure the algorithm that is used to hash
+the keys. It defaults to `md5` and can only contain values that are accepted in
+Node's `crypto` API. Alternatively you can supply it with a function for a
+custom hasher. But do note that the hashValue will be calculated on the result.
 
-var ring = new hashring('192.168.0.102:11212', 'md5');
-```
+### Options
 
-I have chosen crc32 as default algorithm because a creates a nice dense ring
-distribution. Another good alternative and common used hashing algorithm is md5.
-The JavaScript crc32 algorithm is faster than md5. So If you are doing allot of
-operations per seconds these small differences can really matter.
+- `vnode count` The amount of virtual nodes per server, defaults to 40 as this
+  generates 160 points per server as used by ketama hashing.
+- `compatiblity` Allows you to force a compatiblity mode of the HashRing. It
+  default to ketama hash rings but if you are coming from a python world you
+  might want compatiblity with the `hash_ring` module. There's a small diff
+  between `hash_ring` and `ketama` and that's the amount of replica's of a server.
+  Ketama uses 4 and `hash_ring` uses 3. Set this to `hash_ring` if you want to
+  use 3.
+- `replicas` The amount of replicas per server. Defaults to 4.
+- `max cache size` We use a simple LRU cache inside the module to speed up
+  frequent key lookups, you can customize the amount of keys that need to be
+  cached. It defaults to 5000.
 
-### Small API
+### API
 
-In these examples I assume that you already setup a `hashring` instance, with
-the variable name `ring` like I did the in the examples illustrated above.
+#### HashRing.continuum()
 
-#### Getting a node by key
-a.k.a key -> node look up, this is where all the magic is happening.
+Generates the continuum of server a.k.a the Hash Ring based on their weights and
+virtual nodes assigned.
 
-```javascript
-ring.get('foo'); // => '192.168.0.104:11212'
-ring.get('pewpew'); // => '192.168.0.103:11212'
-```
+#### HashRing.get(**key**)
 
-#### Replacing a server
-If you are experiencing downtime with one of your servers, you might want to
-`hot swap` with a new server.
+Find the correct node for the key which is closest to the point after what the
+given key hashes to.
 
-```javascript
-ring.replace('192.168.0.104:11212','192.168.0.112:11212');
-ring.get('foo'); // => '192.168.0.112:11212'
-```
+- **key** String, Random key that needs to be searched in the hash ring
 
-#### Add a server
-Adds a new server to the hash ring, but please note that this could cause a
-shift in current key -> server distribution.
+**returns:** The matching server address.
 
-```javascript
-ring.add('192.168.0.102:11212');
-```
+#### HashRing.range(**key**, **size**, **unique**)
 
-#### Remove a server
-Remove a server from the generated hash ring.
+Returns a range of servers. Could be useful for replication.
 
-```javascript
-ring.remove('192.168.0.102:11212');
-```
+- **key** String, Random key that needs to be searched in the hash ring
+- **size** Number, Amount items to be returned (maximum). Defaults to the amount
+  of servers that are in the hashring.
+- **unique** Boolean, Don't return duplicate servers. Defaults to true.
 
-#### Creating a range
-Iterates over the nodes for a give key, can be used to create redundancy support.
+**returns:** The array of servers that we found.
 
-```javascript
-ring.range('key', 3);
-```
+#### HashRing.swap(**from*, **to**)
 
-#### Ending
-Clean up the internal hash ring, kill the cache, kill nodes, nuke the planet.
+Hotswap identical servers with each other. This doesn't require the cache to be
+completely nuked and the hash ring distribution to be re-calculated.
 
-```javascript
-range.end();
-```
+Please note that removing the server and a new adding server could potentially
+create a different distribution.
 
-For a more extensive documentation: Read the source, it's not rocket sience.
+- **from** String, The server that needs to be replaced
+- **to** String. The server that replaces the server
+
+#### HashRing.add(**server**)
+
+Add a new server to ring without having to re-initialize the hashring. It
+accepts the same arguments as you can use in the constructor.
+
+- **server** Server that need to be added to the ring.
+
+#### HashRing.remove(**server**)
+
+Remove a server from the hash ring.
+
+- **server** Server that need to be removed from the ring.
+
+#### HashRing.reset()
+
+Reset the HashRing and clean up it's references.
+
+### HashRing.end()
+
+Reset's the HashRing and closes the ring.
+
+#### HashRing.find(**hashValue**) (private)
+
+Finds the correct position of the given hashValue in the hashring.
+
+- **hashValue** Number, The hashValue from the HashRing#hashValue method.
+
+**returns:** Index of the value in the ring.
+
+#### HashRing.hash(**key**) (private)
+
+Generates the hash for the key.
+
+- **key** String, Random key that needs to be hashed.
+
+**returns:** The hashed valued.
+
+#### HashRing.digest(**key**) (private)
+
+Digest hash so we can make a numeric representation from the hash. So it can be
+fed in to our hashValue.
+
+- **key** String, Random key that needs to be hashed.
+
+**returns:** An array of charCodeAt(0) converted chars.
+
+#### HashRing.hashValue(**key**) (private)
+
+Get the hashed value of the given key, it does the digesting, hashing yo.
+
+- **key** String, Random key that needs to be hashed.
+
+**returns:** The hash value of the key.
+
+#### HashRing.points(**servers**)
+
+Returns the points per server.
+
+- **servers** Optional server that you want to filter for
+
+**returns:** A Object with server -> Array of points mapping
+
+## Upgrading from 0.0.x to 1.x.x
+
+The 0.0.x releases had some seriouse flaws that causes it to be incompatible
+with the 1.0.0 release. These flaws are the reason that 1.0.0 got released. they
+are not backwards compatible as they change the way that keys are hashed. The
+following incompatible changes have been made for the sake of consistency:
+
+- Only accepts hashers that are build in to node (for now). As it can only
+  guarentee proper hashing of values.
+- The replace function was actually doing swaps of keys, so it's original
+  functionality has been renamed to `swap`. The replace API is now removing the
+  given server and adds it again. As this causes the servers to be propperly
+  re-hashed.
+- The module now requires a C++ compiler to be installed on your server as
+  hashing the value requires support for 64bit bitshifting and JavaScript as a
+  language only supports 32bit bitshifting.
+- It adds 4 replica's instead 3 for the servers. This is how libketama
+  originally did it, if you want to have 3 replica's in the hash ring you can
+  set the compatiblity option to `hash_ring`.
+- The API's have be renamed, deprication notices are added in to place and they
+  will be removed in the next minor version bump (1.1.0)
+- Added human readable configuration options instead of camelcase. This
+  increases readablity of the module

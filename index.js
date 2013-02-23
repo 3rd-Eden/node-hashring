@@ -50,7 +50,7 @@ function HashRing(servers, algorithm, options) {
   // hash_ring package. Small, but important.
   this.replicas = options.compatibility
     ? (options.compatibility === 'hash_ring' ? 3 : 4)
-    : 4;
+    : +options.replicas || 4;
 
   // Private properties
   var connections = parse(servers);
@@ -63,7 +63,7 @@ function HashRing(servers, algorithm, options) {
   // Set up a ache as we don't want to preform a hashing operation every single
   // time we lookup a key.
   this.cache = new SimpleCache({
-    maxSize: options.maxCacheSize || 5000
+    maxSize: options['max cache size'] || 5000
   });
 
   // Override the hashing function if people want to use a hashing algorithm
@@ -152,8 +152,7 @@ HashRing.prototype.get = function get(key) {
 };
 
 /**
- * Find the correct node for the key which is closest to the point after what
- * the given key hashes to.
+ * Returns the position of the hashValue in the hashring
  *
  * @param {Number} hashValue find the nearest server close to this hash
  * @returns {Number} position of the server in the hash ring
@@ -240,6 +239,7 @@ HashRing.prototype.hashValue = function hasher(key) {
  * @param {String} key
  * @param {Number} size Amount of servers it should return
  * @param {Boolean} unique Return only unique keys
+ * @return {Array}
  * @api public
  */
 HashRing.prototype.range = function range(key, size, unique) {
