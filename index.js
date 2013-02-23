@@ -34,7 +34,6 @@ function HashRing(servers, algorithm, options) {
   options = options || {};
 
   // These properties can be configured
-  this.pps = options['points per server'] || 160;     // Points per server
   this.vnode = options['vnode count'] || 40;          // Virtual nodes per server
   this.algorithm = algorithm || 'md5';                // Hashing algorithm
 
@@ -104,6 +103,10 @@ HashRing.prototype.continuum = function generate() {
       , length = Math.floor(percentage * vnodes * servers.length)
       , key
       , x;
+
+    // If you supply us with a custom vnode size, we will use that instead of
+    // our computed distribution
+    if (vnodes !== 40) length = vnodes;
 
     for (var i = 0; i < length; i++) {
       x = self.digest(server.string +'-'+ i);

@@ -75,7 +75,7 @@ describe('HashRing', function () {
       });
 
       ring.servers.should.have.length(3);
-      ring.ring.length.should.be.equal((4 + 3 + 5) * 3);
+      ring.ring.length.should.be.equal((4 + 3 + 5) * ring.replicas);
     });
 
     it('constructs with no arguments', function () {
