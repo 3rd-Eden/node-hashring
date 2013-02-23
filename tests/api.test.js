@@ -99,8 +99,7 @@ describe('HashRing', function () {
         , '127.0.0.1:11212': 400
       });
 
-      var points = ring.points();
-      console.log(points['127.0.0.1:11211'].length);
+      ring.ring.length.should.equal(160 * 2);
     });
 
     describe("#add", function () {
