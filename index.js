@@ -119,9 +119,13 @@ HashRing.prototype.continuum = function generate() {
     }
   });
 
-  // Sort the keys
+  // Sort the keys using the continuum points compare that is used in ketama
+  // hashing.
   this.ring = this.ring.sort(function sorted(a, b) {
-    return (a.value < b.value) ? -1 : (a.value > b.value) ? 1 : 0;
+    if (a.value === b.value) return 0;
+    else if (a.value > b.value) return 1;
+
+    return -1;
   });
 
   this.size = this.ring.length;
