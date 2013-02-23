@@ -78,6 +78,15 @@ describe('HashRing', function () {
       ring.ring.length.should.be.equal((4 + 3 + 5) * ring.replicas);
     });
 
+    it('constructs with a default vnode value', function () {
+      var ring = new Hashring([
+          '192.168.0.102:11212'
+        , '192.168.0.103:11212'
+      ], 'md5', { 'vnode count': 60 });
+
+      ring.ring.length.should.equal(60 * ring.replicas * ring.servers.length);
+    });
+
     it('constructs with no arguments', function () {
       var ring = new Hashring();
 

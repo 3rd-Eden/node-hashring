@@ -106,7 +106,7 @@ HashRing.prototype.continuum = function generate() {
 
     // If you supply us with a custom vnode size, we will use that instead of
     // our computed distribution
-    if (vnodes !== 40) length = vnodes;
+    if (vnodes !== self.vnode) length = vnodes;
 
     for (var i = 0; i < length; i++) {
       x = self.digest(server.string +'-'+ i);
