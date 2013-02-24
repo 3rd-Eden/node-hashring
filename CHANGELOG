@@ -1,3 +1,7 @@
+Feb 24, 2013
+- Refactored the whole driver, these changes are incompatible with the 0.0.x
+  releases as they have changed the distriubtion of keys.
+
 Jan 11, 2013
 - Added LRU caching instead of a plain object for caching, this prevents memory
   leaks

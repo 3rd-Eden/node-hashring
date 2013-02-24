@@ -216,5 +216,27 @@ describe('HashRing', function () {
         ring.ring.should.have.length(0);
       });
     });
+
+    describe('#range', function () {
+      it('returns 20 servers', function () {
+        var ring = new Hashring([
+            '192.168.0.102:11212'
+          , '192.168.0.103:11212'
+          , '192.168.0.104:11212'
+        ]);
+
+        ring.range('foo', 20, false).should.have.length(20);
+      });
+
+      it('returns 3 servers as we only want unique servers', function () {
+        var ring = new Hashring([
+            '192.168.0.102:11212'
+          , '192.168.0.103:11212'
+          , '192.168.0.104:11212'
+        ]);
+
+        ring.range('foo', 20, false).should.have.length(20);
+      });
+    });
   });
 });

@@ -1,36 +1,27 @@
 {
   "name": "hashring",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "author": "Arnout Kazemier",
-  "description": "A pure JavaScript hash ring based on libketama",
+  "description": "A consistent hashring compatible with ketama hashing and python's hash_ring",
   "main": "./index.js",
   "keywords": [
     "hashring",
     "hash ring",
     "hashing",
+    "hashvalue",
+    "ketama",
+    "hash_ring",
     "hash",
     "consistent hashing",
     "libketama"
   ],
-  "maintainers": [
-    {
-      "name": "Arnout Kazemier",
-      "email": "info@3rd-Eden.com",
-      "web": "http://www.3rd-Eden.com"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/3rd-Eden/node-hashring/blob/master/LICENSE"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "git",
-      "url": "http://github.com/3rd-Eden/node-hashring.git"
-    }
-  ],
+  "license": "MIT",
+  "bugs": "http://github.com/3rd-Eden/node-hashring/issues",
+  "homepage": "http://github.com/3rd-Eden/node-hashring/",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/3rd-Eden/node-hashring.git"
+  },
   "dependencies": {
     "connection-parse": "0.0.x",
     "simple-lru-cache": "0.0.x"

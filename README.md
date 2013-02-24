@@ -101,12 +101,23 @@ custom hasher. But do note that the hashValue will be calculated on the result.
   frequent key lookups, you can customize the amount of keys that need to be
   cached. It defaults to 5000.
 
-### API
+### API's Table of Contents
+
+- [HashRing.continuum()](#hashringcontinuum)
+- [HashRing.get()](#hashringgetkey)
+- [HashRing.range()](#hashringrangekey-size-unique)
+- [HashRing.swap()](#hashringswapfrom-to)
+- [HashRing.add()](#hashringaddserver)
+- [HashRing.remove()](#hashringremoveserver)
+- [HashRing.reset()](#hashringreset)
+- [HashRing.end()](#hashringend)
 
 #### HashRing.continuum()
 
 Generates the continuum of server a.k.a the Hash Ring based on their weights and
 virtual nodes assigned.
+
+---
 
 #### HashRing.get(**key**)
 
@@ -116,6 +127,8 @@ given key hashes to.
 - **key** String, Random key that needs to be searched in the hash ring
 
 **returns:** The matching server address.
+
+---
 
 #### HashRing.range(**key**, **size**, **unique**)
 
@@ -128,6 +141,8 @@ Returns a range of servers. Could be useful for replication.
 
 **returns:** The array of servers that we found.
 
+---
+
 #### HashRing.swap(**from*, **to**)
 
 Hotswap identical servers with each other. This doesn't require the cache to be
@@ -139,6 +154,8 @@ create a different distribution.
 - **from** String, The server that needs to be replaced
 - **to** String. The server that replaces the server
 
+---
+
 #### HashRing.add(**server**)
 
 Add a new server to ring without having to re-initialize the hashring. It
@@ -146,19 +163,27 @@ accepts the same arguments as you can use in the constructor.
 
 - **server** Server that need to be added to the ring.
 
+---
+
 #### HashRing.remove(**server**)
 
 Remove a server from the hash ring.
 
 - **server** Server that need to be removed from the ring.
 
+---
+
 #### HashRing.reset()
 
 Reset the HashRing and clean up it's references.
 
+---
+
 ### HashRing.end()
 
 Reset's the HashRing and closes the ring.
+
+---
 
 #### HashRing.find(**hashValue**) (private)
 
@@ -168,6 +193,8 @@ Finds the correct position of the given hashValue in the hashring.
 
 **returns:** Index of the value in the ring.
 
+---
+
 #### HashRing.hash(**key**) (private)
 
 Generates the hash for the key.
@@ -175,6 +202,8 @@ Generates the hash for the key.
 - **key** String, Random key that needs to be hashed.
 
 **returns:** The hashed valued.
+
+---
 
 #### HashRing.digest(**key**) (private)
 
@@ -185,6 +214,8 @@ fed in to our hashValue.
 
 **returns:** An array of charCodeAt(0) converted chars.
 
+---
+
 #### HashRing.hashValue(**key**) (private)
 
 Get the hashed value of the given key, it does the digesting, hashing yo.
@@ -192,6 +223,8 @@ Get the hashed value of the given key, it does the digesting, hashing yo.
 - **key** String, Random key that needs to be hashed.
 
 **returns:** The hash value of the key.
+
+---
 
 #### HashRing.points(**servers**)
 
