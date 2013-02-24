@@ -22,6 +22,10 @@ the `dependencies` field in your package.json.
 
 ## Usage
 
+```js
+var HashRing = require('hashring');
+```
+
 The HashRing constructor is designed to handle different argument types as a
 consistent hash ring can be use for different use cases. You can supply the
 constructor with:
@@ -58,9 +62,9 @@ bigger and there for should receive a greater distrubtion in the ring.
 For a rule of thumb use the amount of memory as weight:
 
 ```js
-var hashring = require('hashring');
+var HashRing = require('hashring');
 
-var ring = new hashring({
+var ring = new HashRing({
   '127.0.0.1:11211': 200,
   '127.0.0.2:11211': { weight: 200 }, // same as above
   '127.0.0.3:11211': 3200
@@ -70,9 +74,9 @@ var ring = new hashring({
 If you want create a server with multiple vnodes (virtual nodes):
 
 ```js
-var hashring = require('hashring');
+var HashRing = require('hashring');
 
-var ring = new hashring({
+var ring = new HashRing({
   '127.0.0.1:11211': { vnodes: 50 },
   '127.0.0.2:11211': { vnodes: 200 },
   '127.0.0.3:11211': { vnodes: 100 }
@@ -100,6 +104,37 @@ custom hasher. But do note that the hashValue will be calculated on the result.
 - `max cache size` We use a simple LRU cache inside the module to speed up
   frequent key lookups, you can customize the amount of keys that need to be
   cached. It defaults to 5000.
+
+```js
+'use strict';
+
+// require the module, it returns a HashRing constructor
+var HashRing = require('hashring');
+
+// Setup hash rings with your servers, in this example I just assume that all
+// servers are equal, and we want to bump the cache size to 10.000 items.
+var ring = new HashRing([
+    '127.0.0.1',
+    '127.0.0.2',
+    '127.0.0.3', 
+    '127.0.0.4'
+  ], 'md5', {
+    'max cache size': 10000
+  });
+
+// Now we are going to get some a server for a key
+ring.get('foo bar banana'); // returns 127.0.0.x
+
+// Or if you might want to do some replication scheme and store/fetch data from
+// multiple servers
+ring.range('foo bar banana', 2).forEach(function forEach(server) {
+  console.log(server); // do stuff with your server
+});
+
+// Add or remove a new a server to the ring, they accept the same arguments as
+// the constructor
+ring.add('127.0.0.7').remove('127.0.0.1');
+```
 
 ### API's Table of Contents
 
