@@ -1,4 +1,7 @@
-Feb 24, 2013
+Mar 14, 2013 (1.0.1)
+- Node.js 0.10 support
+
+Feb 24, 2013 (1.0.0)
 - Refactored the whole driver, these changes are incompatible with the 0.0.x
   releases as they have changed the distriubtion of keys.
 
