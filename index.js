@@ -192,7 +192,7 @@ HashRing.prototype.find = function find(hashValue) {
  * Generates a hash of the string.
  *
  * @param {String} key
- * @returns {String} hash
+ * @returns {String|Buffer} hash, depends on node version
  * @api private
  */
 HashRing.prototype.hash = function hash(key) {
@@ -207,7 +207,13 @@ HashRing.prototype.hash = function hash(key) {
  * @api private
  */
 HashRing.prototype.digest = function digest(key) {
-  return this.hash(key +'').toString().split('').map(function charCode(char) {
+  var hash = this.hash(key +'');
+
+  // Support for Node 0.10 which returns buffers so we don't need to charAt
+  // lookups.
+  if ('string' !== typeof hash) return hash;
+
+  return hash.split('').map(function charCode(char) {
     return char.charCodeAt(0);
   });
 };
