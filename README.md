@@ -292,3 +292,4 @@ following incompatible changes have been made for the sake of consistency:
   will be removed in the next minor version bump (1.1.0)
 - Added human readable configuration options instead of camelcase. This
   increases readablity of the module
+- CRC32 was removed as crypto engine because it was to unstable.
