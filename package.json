@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "connection-parse": "0.0.x",
+    "nan": "0.3.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
