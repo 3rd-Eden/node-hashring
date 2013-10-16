@@ -1,6 +1,6 @@
 'use strict';
 
-var hashValue = require('./build/Release/hashvalue')
+var hashValue = require('bindings')('hashvalue.node')
   , SimpleCache = require("simple-lru-cache")
   , parse = require('connection-parse')
   , crypto = require('crypto');
