@@ -1,3 +1,6 @@
+Oct 16, 2013 (1.0.3)
+- Use the bindings module for propper DEBUG builds.
+
 Sep 13, 2013 (1.0.2)
 - Node.js 0.11 support
 
