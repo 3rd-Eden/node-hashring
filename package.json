@@ -25,13 +25,13 @@
   "dependencies": {
     "bindings": "1.1.x",
     "connection-parse": "0.0.x",
-    "nan": "0.3.x",
+    "nan": "0.8.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
-    "microtime": "0.3.x",
+    "microtime": "0.5.x",
     "mocha": "1.8.x",
     "should": "1.2.x"
   },
