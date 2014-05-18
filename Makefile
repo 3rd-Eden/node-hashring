@@ -8,6 +8,7 @@ run-tests:
 		--reporter $(REPORTER) \
 		--ui $(UI) \
 		--growl \
+                --slow 3000 \
 		$(TESTS)
 
 doc:
