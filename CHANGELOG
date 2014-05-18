@@ -1,5 +1,8 @@
+May 17, 2014 (2.0.0)
+- Upgraded Nan and removed node 0.4 support.
+
 Oct 16, 2013 (1.0.3)
-- Use the bindings module for propper DEBUG builds.
+- Use the bindings module for proper DEBUG builds.
 
 Sep 13, 2013 (1.0.2)
 - Node.js 0.11 support
@@ -9,7 +12,7 @@ Mar 14, 2013 (1.0.1)
 
 Feb 24, 2013 (1.0.0)
 - Refactored the whole driver, these changes are incompatible with the 0.0.x
-  releases as they have changed the distriubtion of keys.
+  releases as they have changed the distribution of keys.
 
 Jan 11, 2013
 - Added LRU caching instead of a plain object for caching, this prevents memory
