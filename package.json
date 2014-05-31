@@ -23,17 +23,17 @@
     "url": "http://github.com/3rd-Eden/node-hashring.git"
   },
   "dependencies": {
-    "bindings": "1.1.x",
+    "bindings": "1.2.x",
     "connection-parse": "0.0.x",
-    "nan": "1.0.x",
+    "nan": "1.1.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
     "microtime": "0.6.x",
-    "mocha": "1.8.x",
-    "should": "1.2.x"
+    "mocha": "1.20.x",
+    "should": "4.0.x"
   },
   "scripts": {
     "test": "make test"
