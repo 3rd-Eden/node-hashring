@@ -208,6 +208,14 @@ Remove a server from the hash ring.
 
 ---
 
+#### HashRing.has(**server**)
+
+Checks if a given server exists in the hash ring.
+
+- **server** Server for whose existence we're checking.
+
+---
+
 #### HashRing.reset()
 
 Reset the HashRing and clean up it's references.
