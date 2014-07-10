@@ -217,6 +217,28 @@ describe('HashRing', function () {
       });
     });
 
+    describe('#has', function () {
+      it('has a server', function () {
+        var ring = new Hashring([
+            '192.168.0.102:11212'
+          , '192.168.0.103:11212'
+          , '192.168.0.104:11212'
+        ]);
+
+        ring.has('192.168.0.102:11212').should.equal(true);
+      });
+
+      it('does not have a server', function () {
+        var ring = new Hashring([
+            '192.168.0.102:11212'
+          , '192.168.0.103:11212'
+          , '192.168.0.104:11212'
+        ]);
+
+        ring.has('192.168.0.105:11212').should.equal(false);
+      });
+    });
+
     describe('#range', function () {
       it('returns 20 servers', function () {
         var ring = new Hashring([
