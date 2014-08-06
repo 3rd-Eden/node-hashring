@@ -415,6 +415,19 @@ HashRing.prototype.remove = function remove(server) {
 };
 
 /**
+ * Checks if a given server exists in the hash ring.
+ *
+ * @param {String} server Server for whose existence we're checking
+ * @api public
+ */
+HashRing.prototype.has = function add(server) {
+  for (var i = 0; i < this.ring.length; i++) {
+    if (this.ring[i].server === server) return true;
+  }
+  return false;
+};
+
+/**
  * Reset the HashRing to clean up all references
  *
  * @api public
