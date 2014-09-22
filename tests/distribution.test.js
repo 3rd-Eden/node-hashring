@@ -37,6 +37,23 @@ describe('Hashring distributions', function () {
     }
   });
 
+  it('hashes to the exact same output as pylibmc', function () {
+    var fixture = require('fs').readFileSync(__dirname +'/fixtures/pylibmc.txt')
+                               .toString().split('\n');
+
+    var ring = new Hashring([
+        '0.0.0.1:11211',
+        '0.0.0.2:11211',
+        '0.0.0.3',
+        '0.0.0.4:11213',
+        '0.0.0.5:11212'
+    ], 'md5', {default_port: 11211});
+
+    for (var i=0; i < 100000; i++){
+      (i + ' ' + ring.get(i)).should.equal(fixture[i]);
+    }
+  });
+
   it('has an even distribution', function () {
     var iterations = 100000
       , nodes = {

@@ -37,6 +37,10 @@ function HashRing(servers, algorithm, options) {
   this.vnode = options['vnode count'] || 40;          // Virtual nodes per server
   this.algorithm = algorithm || 'md5';                // Hashing algorithm
 
+  // if the default port is set, and a host uses it, then it is excluded from
+  // the hash.
+  this.default_port = options['default_port'] || null;
+
   // There's a slight difference between libketama and python's hash_ring
   // module, libketama creates 160 points per server:
   //
@@ -44,7 +48,7 @@ function HashRing(servers, algorithm, options) {
   //
   // The hash_ring module only uses 120 points per server:
   //
-  //   40 hashes (vnodes) and 3 replicas per hash = 160 points per server
+  //   40 hashes (vnodes) and 3 replicas per hash = 120 points per server
   //
   // And that's the only difference between the original ketama hash and the
   // hash_ring package. Small, but important.
@@ -109,7 +113,11 @@ HashRing.prototype.continuum = function generate() {
     if (vnodes !== self.vnode) length = vnodes;
 
     for (var i = 0; i < length; i++) {
-      x = self.digest(server.string +'-'+ i);
+      if (self.default_port && server.port == self.default_port) {
+        x = self.digest(server.host +'-'+ i);
+      } else {
+        x = self.digest(server.string +'-'+ i);
+      }
 
       for (var j = 0; j < self.replicas; j++) {
         key = hashValue.hash(x[3 + j * 4], x[2 + j * 4], x[1 + j * 4], x[j * 4]);
