@@ -39,7 +39,7 @@ function HashRing(servers, algorithm, options) {
 
   // if the default port is set, and a host uses it, then it is excluded from
   // the hash.
-  this.default_port = options['default_port'] || null;
+  this.defaultport = options['default port'] || null;
 
   // There's a slight difference between libketama and python's hash_ring
   // module, libketama creates 160 points per server:
@@ -113,7 +113,7 @@ HashRing.prototype.continuum = function generate() {
     if (vnodes !== self.vnode) length = vnodes;
 
     for (var i = 0; i < length; i++) {
-      if (self.default_port && server.port == self.default_port) {
+      if (self.defaultport && server.port === self.defaultport) {
         x = self.digest(server.host +'-'+ i);
       } else {
         x = self.digest(server.string +'-'+ i);

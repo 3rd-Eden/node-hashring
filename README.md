@@ -94,9 +94,9 @@ custom hasher. But do note that the hashValue will be calculated on the result.
 
 - `vnode count` The amount of virtual nodes per server, defaults to 40 as this
   generates 160 points per server as used by ketama hashing.
-- `compatiblity` Allows you to force a compatiblity mode of the HashRing. It
+- `compatiblity` Allows you to force a compatibility mode of the HashRing. It
   default to ketama hash rings but if you are coming from a python world you
-  might want compatiblity with the `hash_ring` module. There's a small diff
+  might want compatibility with the `hash_ring` module. There's a small diff
   between `hash_ring` and `ketama` and that's the amount of replica's of a server.
   Ketama uses 4 and `hash_ring` uses 3. Set this to `hash_ring` if you want to
   use 3.
@@ -104,6 +104,8 @@ custom hasher. But do note that the hashValue will be calculated on the result.
 - `max cache size` We use a simple LRU cache inside the module to speed up
   frequent key lookups, you can customize the amount of keys that need to be
   cached. It defaults to 5000.
+- `default port` The default port number which will removed from the server
+  address to provide ketama compatibility.
 
 ```js
 'use strict';
@@ -149,8 +151,8 @@ ring.add('127.0.0.7').remove('127.0.0.1');
 
 #### HashRing.continuum()
 
-Generates the continuum of server a.k.a the Hash Ring based on their weights and
-virtual nodes assigned.
+Generates the continuum of server a.k.a as the Hash Ring based on their weights
+and virtual nodes assigned.
 
 ---
 
@@ -279,25 +281,25 @@ Returns the points per server.
 
 ## Upgrading from 0.0.x to 1.x.x
 
-The 0.0.x releases had some seriouse flaws that causes it to be incompatible
-with the 1.0.0 release. These flaws are the reason that 1.0.0 got released. they
+The 0.0.x releases had some serious flaws that causes it to be incompatible
+with the 1.0.0 release. These flaws are the reason that 1.0.0 got released. They
 are not backwards compatible as they change the way that keys are hashed. The
 following incompatible changes have been made for the sake of consistency:
 
 - Only accepts hashers that are build in to node (for now). As it can only
-  guarentee proper hashing of values.
+  guarantee proper hashing of values.
 - The replace function was actually doing swaps of keys, so it's original
   functionality has been renamed to `swap`. The replace API is now removing the
-  given server and adds it again. As this causes the servers to be propperly
+  given server and adds it again. As this causes the servers to be properly
   re-hashed.
 - The module now requires a C++ compiler to be installed on your server as
   hashing the value requires support for 64bit bitshifting and JavaScript as a
   language only supports 32bit bitshifting.
 - It adds 4 replica's instead 3 for the servers. This is how libketama
   originally did it, if you want to have 3 replica's in the hash ring you can
-  set the compatiblity option to `hash_ring`.
-- The API's have be renamed, deprication notices are added in to place and they
+  set the compatibility option to `hash_ring`.
+- The API's have be renamed, deprecation notices are added in to place and they
   will be removed in the next minor version bump (1.1.0)
 - Added human readable configuration options instead of camelcase. This
-  increases readablity of the module
+  increases readability of the module.
 - CRC32 was removed as crypto engine because it was to unstable.

@@ -47,7 +47,7 @@ describe('Hashring distributions', function () {
         '0.0.0.3',
         '0.0.0.4:11213',
         '0.0.0.5:11212'
-    ], 'md5', {default_port: 11211});
+    ], 'md5', { 'default port': 11211 });
 
     for (var i=0; i < 100000; i++){
       (i + ' ' + ring.get(i)).should.equal(fixture[i]);

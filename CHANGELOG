@@ -1,3 +1,8 @@
+Sept 22, 2014 (3.0.0)
+- libketama removes the default supplied port before hashing keys, we now also do
+  this to ensure libketama compatibility.
+- Upgraded all dependencies to the latest versions.
+
 May 17, 2014 (2.0.0)
 - Upgraded Nan and removed node 0.4 support.
 
