@@ -1,9 +1,8 @@
 /**
  * Benchmark dependencies
  */
-var Benchmark = require('benchmark')
-  , microtime = require('microtime');
-  
+var Benchmark = require('benchmark');
+
 /**
  * Different hashring drivers
  */

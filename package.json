@@ -31,8 +31,7 @@
   "devDependencies": {
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
-    "microtime": "0.6.x",
-    "mocha": "1.20.x",
+    "mocha": "1.21.x",
     "should": "4.0.x"
   },
   "scripts": {
