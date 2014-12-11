@@ -25,15 +25,15 @@
   "dependencies": {
     "bindings": "1.2.x",
     "connection-parse": "0.0.x",
-    "nan": "1.3.x",
+    "nan": "1.4.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
-    "mocha": "1.21.x",
+    "mocha": "2.0.x",
     "pre-commit": "0.0.x",
-    "should": "4.0.x"
+    "should": "4.3.x"
   },
   "scripts": {
     "test": "make test"
