@@ -26,16 +26,17 @@ parse.extension('vnodes', function vnode(data, value) {
  * consistent hashing algorithm is based on ketama or libketama.
  *
  * @constructor
- * @param {Mixed} server Servers that need to be added to the ring
- * @param {Mixed} algorithm Either a Crypto compatible algorithm or custom hasher
- * @param {Object} options Optional configuration and options for the ring
+ * @param {Mixed} server Servers that need to be added to the ring.
+ * @param {Mixed} algorithm Either a Crypto compatible algorithm or custom hasher.
+ * @param {Object} options Optional configuration and options for the ring.
+ * @api public
  */
 function HashRing(servers, algorithm, options) {
   options = options || {};
 
   // These properties can be configured
-  this.vnode = options['vnode count'] || 40;          // Virtual nodes per server
-  this.algorithm = algorithm || 'md5';                // Hashing algorithm
+  this.vnode = 'vnode count' in options ? options['vnode count'] : 40;
+  this.algorithm = algorithm || 'md5';
 
   // if the default port is set, and a host uses it, then it is excluded from
   // the hash.
@@ -44,19 +45,19 @@ function HashRing(servers, algorithm, options) {
   // There's a slight difference between libketama and python's hash_ring
   // module, libketama creates 160 points per server:
   //
-  //   40 hashes (vnodes) and 4 replicas per hash = 160 points per server
+  //   40 hashes (vnodes) and 4 replicas per hash = 160 points per server.
   //
   // The hash_ring module only uses 120 points per server:
   //
-  //   40 hashes (vnodes) and 3 replicas per hash = 120 points per server
+  //   40 hashes (vnodes) and 3 replicas per hash = 120 points per server.
   //
   // And that's the only difference between the original ketama hash and the
   // hash_ring package. Small, but important.
   this.replicas = options.compatibility
     ? (options.compatibility === 'hash_ring' ? 3 : 4)
-    : +options.replicas || 4;
+    : ('replicas' in options ? +options.replicas : 4);
 
-  // Private properties
+  // Private properties.
   var connections = parse(servers);
 
   this.ring = [];
@@ -67,7 +68,7 @@ function HashRing(servers, algorithm, options) {
   // Set up a ache as we don't want to preform a hashing operation every single
   // time we lookup a key.
   this.cache = new SimpleCache({
-    maxSize: options['max cache size'] || 5000
+    maxSize: 'max cache size' in  options ? options['max cache size'] : 5000
   });
 
   // Override the hashing function if people want to use a hashing algorithm
@@ -82,9 +83,10 @@ function HashRing(servers, algorithm, options) {
 }
 
 /**
- * Generates the continuum of server a.k.a the Hash Ring based on their weights
+ * Generates the continuum of server a.k.a. the Hash Ring based on their weights
  * and virtual nodes assigned.
  *
+ * @returns {HashRing}
  * @api private
  */
 HashRing.prototype.continuum = function generate() {
@@ -93,10 +95,10 @@ HashRing.prototype.continuum = function generate() {
     , index = 0
     , total = 0;
 
-  // No servers, bailout
+  // No servers, bailout.
   if (!servers.length) return this;
 
-  // Generate the total weight of all the servers
+  // Generate the total weight of all the servers.
   total = servers.reduce(function reduce(total, server) {
     return total + server.weight;
   }, 0);
@@ -109,7 +111,7 @@ HashRing.prototype.continuum = function generate() {
       , x;
 
     // If you supply us with a custom vnode size, we will use that instead of
-    // our computed distribution
+    // our computed distribution.
     if (vnodes !== self.vnode) length = vnodes;
 
     for (var i = 0; i < length; i++) {
@@ -144,8 +146,8 @@ HashRing.prototype.continuum = function generate() {
  * Find the correct node for the key which is closest to the point after what
  * the given key hashes to.
  *
- * @param {String} key
- * @returns {String} server
+ * @param {String} key Key who's server we need to figure out.
+ * @returns {String} Server address.
  * @api public
  */
 HashRing.prototype.get = function get(key) {
@@ -160,10 +162,10 @@ HashRing.prototype.get = function get(key) {
 };
 
 /**
- * Returns the position of the hashValue in the hashring
+ * Returns the position of the hashValue in the hashring.
  *
- * @param {Number} hashValue find the nearest server close to this hash
- * @returns {Number} position of the server in the hash ring
+ * @param {Number} hashValue Find the nearest server close to this hash.
+ * @returns {Number} Position of the server in the hash ring.
  * @api public
  */
 HashRing.prototype.find = function find(hashValue) {
@@ -175,7 +177,7 @@ HashRing.prototype.find = function find(hashValue) {
     , mid;
 
   // Preform a search on the array to find the server with the next biggest
-  // point after what the given key hashes to
+  // point after what the given key hashes to.
   while (true) {
     mid = (low + high) >> 1;
 
@@ -200,7 +202,7 @@ HashRing.prototype.find = function find(hashValue) {
  * Generates a hash of the string.
  *
  * @param {String} key
- * @returns {String|Buffer} hash, depends on node version
+ * @returns {String|Buffer} Hash, depends on node version.
  * @api private
  */
 HashRing.prototype.hash = function hash(key) {
@@ -210,7 +212,7 @@ HashRing.prototype.hash = function hash(key) {
 /**
  * Digest hash so we can make a numeric representation from the hash.
  *
- * @param {String} key The key that needs to be hashed
+ * @param {String} key The key that needs to be hashed.
  * @returns {Array}
  * @api private
  */
@@ -227,7 +229,7 @@ HashRing.prototype.digest = function digest(key) {
 };
 
 /**
- * Get the hashed value for the given key
+ * Get the hashed value for the given key.
  *
  * @param {String} key
  * @returns {Number}
@@ -251,8 +253,8 @@ HashRing.prototype.hashValue = function hasher(key) {
  * Get a range of different servers.
  *
  * @param {String} key
- * @param {Number} size Amount of servers it should return
- * @param {Boolean} unique Return only unique keys
+ * @param {Number} size Amount of servers it should return.
+ * @param {Boolean} unique Return only unique keys.
  * @return {Array}
  * @api public
  */
@@ -267,7 +269,7 @@ HashRing.prototype.range = function range(key, size, unique) {
     , servers = []
     , node;
 
-  // Start searching for servers from the postion of the key to the end of
+  // Start searching for servers from the position of the key to the end of
   // HashRing.
   for (var i = position; i < length; i++) {
     node = this.ring[i];
@@ -303,8 +305,8 @@ HashRing.prototype.range = function range(key, size, unique) {
 /**
  * Returns the points per server.
  *
- * @param {String} server Optional server to filter down
- * @returns {Object} server -> Array(points)
+ * @param {String} server Optional server to filter down.
+ * @returns {Object} server -> Array(points).
  * @api public
  */
 HashRing.prototype.points = function points(servers) {
@@ -335,8 +337,9 @@ HashRing.prototype.points = function points(servers) {
  * Please note that removing the server and a new adding server could
  * potentially create a different distribution.
  *
- * @param {String} from The server that needs to be replaced
- * @param {String} to The server that replaces the server
+ * @param {String} from The server that needs to be replaced.
+ * @param {String} to The server that replaces the server.
+ * @returns {HashRing}
  * @api public
  */
 HashRing.prototype.swap = function swap(from, to) {
@@ -373,7 +376,8 @@ HashRing.prototype.swap = function swap(from, to) {
  * Add a new server to ring without having to re-initialize the hashring. It
  * accepts the same arguments as you can use in the constructor.
  *
- * @param {Mixed} servers Servers that need to be added to the ring
+ * @param {Mixed} servers Servers that need to be added to the ring.
+ * @returns {HashRing}
  * @api public
  */
 HashRing.prototype.add = function add(servers) {
@@ -391,12 +395,12 @@ HashRing.prototype.add = function add(servers) {
   });
 
   // Now that we generated a complete set of servers, we can update the re-parse
-  // the set and correctly added all the servers again
+  // the set and correctly added all the servers again.
   connections = parse(connections);
   this.vnodes = connections.vnodes;
   this.servers = connections.servers;
 
-  // Rebuild the hash ring
+  // Rebuild the hash ring.
   this.reset();
   return this.continuum();
 };
@@ -404,7 +408,8 @@ HashRing.prototype.add = function add(servers) {
 /**
  * Remove a server from the hashring.
  *
- * @param {Mixed} server
+ * @param {Mixed} server The sever we want to remove.
+ * @returns {HashRing}
  * @api public
  */
 HashRing.prototype.remove = function remove(server) {
@@ -426,18 +431,21 @@ HashRing.prototype.remove = function remove(server) {
  * Checks if a given server exists in the hash ring.
  *
  * @param {String} server Server for whose existence we're checking
+ * @returns {Boolean} Indication if we have that server.
  * @api public
  */
 HashRing.prototype.has = function add(server) {
   for (var i = 0; i < this.ring.length; i++) {
     if (this.ring[i].server === server) return true;
   }
+
   return false;
 };
 
 /**
  * Reset the HashRing to clean up all references
  *
+ * @returns {HashRing}
  * @api public
  */
 HashRing.prototype.reset = function reset() {
@@ -448,6 +456,12 @@ HashRing.prototype.reset = function reset() {
   return this;
 };
 
+/**
+ * End the hashring and clean up all of it's references.
+ *
+ * @returns {HashRing}
+ * @api public
+ */
 HashRing.prototype.end = function end() {
   this.reset();
 
@@ -470,11 +484,9 @@ function Node(hashvalue, server) {
   this.server = server;
 }
 
-/**
- * Set up the legacy API aliases. These will be depricated in the next release.
- *
- * @api public
- */
+//
+// Set up the legacy API aliases. These will be deprecated in the next release.
+//
 [
   { from: 'replaceServer' },
   { from: 'replace' },
@@ -510,6 +522,7 @@ function Node(hashvalue, server) {
  * Expose the current version number.
  *
  * @type {String}
+ * @public
  */
 HashRing.version = require('./package.json').version;
 
