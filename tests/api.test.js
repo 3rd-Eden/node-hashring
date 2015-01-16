@@ -1,10 +1,11 @@
-"use strict";
-
-var Hashring = require('../');
-
 describe('HashRing', function () {
+  "use strict";
+
+  var Hashring = require('../')
+    , assume = require('assume');
+
   it('exposes the library version', function () {
-    Hashring.version.should.match(/^\d+\.\d+\.\d+$/);
+    assume(Hashring.version).matches(/^\d+\.\d+\.\d+$/);
   });
 
   it('libmemcached compatiblity', function () {
@@ -21,15 +22,15 @@ describe('HashRing', function () {
 
     // VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets us
     // test the boundary wraparound.
-    ring.find(ring.hashValue('VDEAAAAA')).should.equal(0);
+    assume(ring.find(ring.hashValue('VDEAAAAA'))).equals(0);
   });
 
   describe('API', function () {
     it('constructs with a string', function () {
       var ring = new Hashring('192.168.0.102:11212');
 
-      ring.servers.should.have.length(1);
-      ring.ring.length.should.be.above(1);
+      assume(ring.servers).has.length(1);
+      assume(ring.ring.length).is.above(1);
     });
 
     it('constructs with a array', function () {
@@ -39,8 +40,8 @@ describe('HashRing', function () {
         , '192.168.0.104:11212'
       ]);
 
-      ring.servers.should.have.length(3);
-      ring.ring.length.should.be.above(1);
+      assume(ring.servers).has.length(3);
+      assume(ring.ring.length).is.above(1);
     });
 
     it('constructs with a object', function () {
@@ -50,11 +51,11 @@ describe('HashRing', function () {
         , '192.168.0.104:11212': 2
       });
 
-      ring.servers.should.have.length(3);
-      ring.ring.length.should.be.above(1);
+      assume(ring.servers).has.length(3);
+      assume(ring.ring.length).is.above(1);
 
       ring.servers.forEach(function (server) {
-        server.weight.should.be.above(1);
+        assume(server.weight).is.above(1);
       });
     });
 
@@ -65,8 +66,8 @@ describe('HashRing', function () {
         , '192.168.0.104:11212': { 'vnodes': 5 }
       });
 
-      ring.servers.should.have.length(3);
-      ring.ring.length.should.be.equal((40 + 50 + 5) * ring.replicas);
+      assume(ring.servers).is.length(3);
+      assume(ring.ring.length).equals((40 + 50 + 5) * ring.replicas);
 
       ring = new Hashring({
           '192.168.0.102:11212': { 'vnodes': 4 }
@@ -74,8 +75,8 @@ describe('HashRing', function () {
         , '192.168.0.104:11212': { 'vnodes': 5 }
       });
 
-      ring.servers.should.have.length(3);
-      ring.ring.length.should.be.equal((4 + 3 + 5) * ring.replicas);
+      assume(ring.servers).has.length(3);
+      assume(ring.ring.length).equals((4 + 3 + 5) * ring.replicas);
     });
 
     it('constructs with a default vnode value', function () {
@@ -84,22 +85,22 @@ describe('HashRing', function () {
         , '192.168.0.103:11212'
       ], 'md5', { 'vnode count': 60 });
 
-      ring.ring.length.should.equal(60 * ring.replicas * ring.servers.length);
+      assume(ring.ring.length).equals(60 * ring.replicas * ring.servers.length);
     });
 
     it('constructs with no arguments', function () {
       var ring = new Hashring();
 
-      ring.servers.should.have.length(0);
-      ring.ring.should.have.length(0);
+      assume(ring.servers).has.length(0);
+      assume(ring.ring).has.length(0);
     });
 
     it('accepts different algorithms', function () {
       var ring = new Hashring('192.168.0.102:11212', 'sha1');
 
-      ring.servers.should.have.length(1);
-      ring.algorithm.should.equal('sha1');
-      ring.ring.length.should.be.above(1);
+      assume(ring.servers).has.length(1);
+      assume(ring.algorithm).equals('sha1');
+      assume(ring.ring.length).is.above(1);
     });
 
     it('generates the correct amount of points', function () {
@@ -108,7 +109,7 @@ describe('HashRing', function () {
         , '127.0.0.1:11212': 400
       });
 
-      ring.ring.length.should.equal(160 * 2);
+      assume(ring.ring.length).equals(160 * 2);
     });
 
     describe("#add", function () {
@@ -116,8 +117,8 @@ describe('HashRing', function () {
         var ring = new Hashring();
         ring.add('192.168.0.102:11212');
 
-        ring.servers.should.have.length(1);
-        ring.ring.length.should.be.above(1);
+        assume(ring.servers).has.length(1);
+        assume(ring.ring.length).is.above(1);
       });
     });
 
@@ -129,27 +130,27 @@ describe('HashRing', function () {
           , '192.168.0.104:11212'
         ]);
 
-        ring.find(ring.hashValue('foo')).should.be.above(-1);
+        assume(ring.find(ring.hashValue('foo'))).is.above(-1);
 
         // NOTE we are going to do some flaky testing ;P
-        ring.get('foo').should.equal('192.168.0.102:11212');
-        ring.get('pewpew').should.equal('192.168.0.103:11212');
+        assume(ring.get('foo')).equals('192.168.0.102:11212');
+        assume(ring.get('pewpew')).equals('192.168.0.103:11212');
 
         // we are not gonna verify the results we are just gonna test if we don't
         // fuck something up in the code, so it throws errors or whatever
 
         // unicode keys, just because people roll like that
-        ring.find(ring.hashValue('привет мир, Memcached и nodejs для победы')).should.be.above(-1);
+        assume(ring.find(ring.hashValue('привет мир, Memcached и nodejs для победы'))).is.above(-1);
 
         // other odd keys
-        ring.find(ring.hashValue(1)).should.be.above(-1);
-        ring.find(ring.hashValue(0)).should.be.above(-1);
-        ring.find(ring.hashValue([])).should.be.above(-1);
-        ring.find(ring.hashValue({wtf:'lol'})).should.be.above(-1);
+        assume(ring.find(ring.hashValue(1))).is.above(-1);
+        assume(ring.find(ring.hashValue(0))).is.above(-1);
+        assume(ring.find(ring.hashValue([]))).is.above(-1);
+        assume(ring.find(ring.hashValue({wtf:'lol'}))).is.above(-1);
 
         // this should work as both objects are converted to [object Object] by
         // the .toString() constructor
-        ring.get({wtf:'lol'}).should.equal(ring.get({wtf:'amazing .toStringing'}));
+        assume(ring.get({wtf:'lol'})).equals(ring.get({wtf:'amazing .toStringing'}));
       });
     });
 
@@ -160,7 +161,7 @@ describe('HashRing', function () {
           , '127.0.0.1:11212': 400
         });
 
-        ring.hashValue('test').should.equal(3446378249);
+        assume(ring.hashValue('test')).equals(3446378249);
       });
     });
 
@@ -171,7 +172,7 @@ describe('HashRing', function () {
           , '127.0.0.1:11212': 400
         });
 
-        ring.ring[ring.find(ring.hashValue('test'))].value.should.equal(3454255383);
+        assume(ring.ring[ring.find(ring.hashValue('test'))].value).equals(3454255383);
       });
     });
 
@@ -186,11 +187,11 @@ describe('HashRing', function () {
           , skynet = '192.168.0.128:11212';
 
         ring.swap(amazon, skynet);
-        ring.cache.get("justdied").should.equal(skynet);
+        assume(ring.cache.get('justdied')).equals(skynet);
 
         // After a cleared cache, it should still resolve to the same server
         ring.cache.reset();
-        ring.get('justdied').should.equal(skynet);
+        assume(ring.get('justdied')).equals(skynet);
       });
     });
 
@@ -204,7 +205,7 @@ describe('HashRing', function () {
 
         ring.remove('192.168.0.102:11212');
         ring.ring.forEach(function (node) {
-          node.server.should.not.equal('192.168.0.102:11212');
+          assume(node.server).does.not.equal('192.168.0.102:11212');
         });
       });
 
@@ -212,8 +213,8 @@ describe('HashRing', function () {
         var ring = new Hashring('192.168.0.102:11212');
         ring.remove('192.168.0.102:11212');
 
-        ring.servers.should.have.length(0);
-        ring.ring.should.have.length(0);
+        assume(ring.servers).has.length(0);
+        assume(ring.ring).has.length(0);
       });
     });
 
@@ -225,7 +226,7 @@ describe('HashRing', function () {
           , '192.168.0.104:11212'
         ]);
 
-        ring.has('192.168.0.102:11212').should.equal(true);
+        assume(ring.has('192.168.0.102:11212')).is.true();
       });
 
       it('does not have a server', function () {
@@ -235,7 +236,7 @@ describe('HashRing', function () {
           , '192.168.0.104:11212'
         ]);
 
-        ring.has('192.168.0.105:11212').should.equal(false);
+        assume(ring.has('192.168.0.105:11212')).is.false();
       });
     });
 
@@ -247,7 +248,7 @@ describe('HashRing', function () {
           , '192.168.0.104:11212'
         ]);
 
-        ring.range('foo', 20, false).should.have.length(20);
+        assume(ring.range('foo', 20, false)).is.length(20);
       });
 
       it('returns 3 servers as we only want unique servers', function () {
@@ -257,7 +258,7 @@ describe('HashRing', function () {
           , '192.168.0.104:11212'
         ]);
 
-        ring.range('foo', 20, false).should.have.length(20);
+        assume(ring.range('foo', 20, false)).is.length(20);
       });
     });
   });

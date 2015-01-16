@@ -1,8 +1,11 @@
-"use strict";
-
-var Hashring = require('../');
-
 describe('Hashring distributions', function () {
+  "use strict";
+
+  var Hashring = require('../')
+    , assume = require('assume');
+
+  this.timeout(20000);
+
   it('hashes to the exact same output as hash_ring for python', function () {
     var fixture = require('fs').readFileSync(__dirname +'/fixtures/hash_ring.txt')
                                .toString().split('\n');
@@ -16,7 +19,7 @@ describe('Hashring distributions', function () {
     }, 'md5', { compatibility: 'hash_ring' });
 
     for (var i=0; i < 100000; i++){
-      (i + ' ' + ring.get(i)).should.equal(fixture[i]);
+      assume(i + ' ' + ring.get(i)).equals(fixture[i]);
     }
   });
 
@@ -33,7 +36,7 @@ describe('Hashring distributions', function () {
     }, 'md5');
 
     for (var i=0; i < 100000; i++){
-      (i + ' ' + ring.get(i)).should.equal(fixture[i]);
+      assume(i + ' ' + ring.get(i)).equals(fixture[i]);
     }
   });
 
@@ -50,7 +53,7 @@ describe('Hashring distributions', function () {
     ], 'md5', { 'default port': 11211 });
 
     for (var i=0; i < 100000; i++){
-      (i + ' ' + ring.get(i)).should.equal(fixture[i]);
+      assume(i + ' ' + ring.get(i)).equals(fixture[i]);
     }
   });
 
@@ -104,7 +107,7 @@ describe('Hashring distributions', function () {
       , upper = 1.0 / 3 + 0.05;
 
     for (node in counts) {
-      (counts[node] / total).should.be.within(lower, upper);
+      assume(counts[node] / total).is.within(lower, upper);
     }
   });
 });

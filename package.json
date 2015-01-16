@@ -31,9 +31,9 @@
   "devDependencies": {
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
-    "mocha": "2.0.x",
+    "mocha": "2.1.x",
     "pre-commit": "0.0.x",
-    "should": "4.3.x"
+    "assume": "0.0.x"
   },
   "scripts": {
     "test": "make test"
