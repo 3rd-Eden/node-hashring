@@ -1,3 +1,8 @@
+Jan 16, 2015 (3.1.0)
+- Bump NaN dependency.
+- Removed 0.6 from Travis as it's getting install errors for certain dependencies
+  consider support for 0.6 removed.
+
 Sept 22, 2014 (3.0.0)
 - libketama removes the default supplied port before hashing keys, we now also do
   this to ensure libketama compatibility.
