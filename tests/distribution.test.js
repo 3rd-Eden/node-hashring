@@ -4,7 +4,7 @@ describe('Hashring distributions', function () {
   var Hashring = require('../')
     , assume = require('assume');
 
-  this.timeout(20000);
+  this.timeout(60000);
 
   it('hashes to the exact same output as hash_ring for python', function () {
     var fixture = require('fs').readFileSync(__dirname +'/fixtures/hash_ring.txt')
