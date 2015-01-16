@@ -25,17 +25,22 @@
   "dependencies": {
     "bindings": "1.2.x",
     "connection-parse": "0.0.x",
-    "nan": "1.4.x",
+    "nan": "1.5.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
+    "assume": "0.0.x",
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
+    "istanbul": "0.3.x",
     "mocha": "2.1.x",
-    "pre-commit": "0.0.x",
-    "assume": "0.0.x"
+    "pre-commit": "0.0.x"
   },
   "scripts": {
-    "test": "make test"
+    "100%": "istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
+    "test": "mocha tests/api.test.js tests/distribution.test.js",
+    "watch": "mocha --watch tests/api.test.js tests/distribution.test.js",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- tests/api.test.js tests/distribution.test.js",
+    "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- tests/api.test.js tests/distribution.test.js"
   }
 }
