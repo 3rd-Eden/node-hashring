@@ -1,7 +1,13 @@
 language: node_js
+sudo: false
+language: node_js
 node_js:
   - "0.8"
   - "0.10"
-  - "0.11"
+  - "0.12"
+  - "iojs"
 before_install:
-  - "npm install -g npm@2.1.18"
+  - 'if [ "${TRAVIS_NODE_VERSION}" == "0.8" ] || [ "${TRAVIS_NODE_VERSION}" == "0.9" ] ; then npm install -g npm@2.7.3; fi'
+ "npm install -g npm@2.1.18"
+script:
+  - "npm run test-travis"
