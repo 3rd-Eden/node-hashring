@@ -1,6 +1,6 @@
 {
   "name": "hashring",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "author": "Arnout Kazemier",
   "description": "A consistent hashring compatible with ketama hashing and python's hash_ring",
   "main": "./index.js",
