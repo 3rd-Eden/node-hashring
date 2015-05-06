@@ -25,16 +25,16 @@
   "dependencies": {
     "bindings": "1.2.x",
     "connection-parse": "0.0.x",
-    "nan": "^1.8.4",
+    "nan": "1.8.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
-    "assume": "0.0.x",
+    "assume": "1.2.x",
     "benchmark": "1.0.x",
     "devnull": "0.0.x",
     "istanbul": "0.3.x",
-    "mocha": "2.1.x",
-    "pre-commit": "0.0.x"
+    "mocha": "2.2.x",
+    "pre-commit": "1.0.x"
   },
   "scripts": {
     "100%": "istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
