@@ -34,14 +34,19 @@ parse.extension('vnodes', function vnode(data, value) {
 function HashRing(servers, algorithm, options) {
   options = options || {};
 
+  //
   // These properties can be configured
+  //
   this.vnode = 'vnode count' in options ? options['vnode count'] : 40;
   this.algorithm = algorithm || 'md5';
 
+  //
   // if the default port is set, and a host uses it, then it is excluded from
   // the hash.
+  //
   this.defaultport = options['default port'] || null;
 
+  //
   // There's a slight difference between libketama and python's hash_ring
   // module, libketama creates 160 points per server:
   //
@@ -53,9 +58,16 @@ function HashRing(servers, algorithm, options) {
   //
   // And that's the only difference between the original ketama hash and the
   // hash_ring package. Small, but important.
+  //
   this.replicas = options.compatibility
     ? (options.compatibility === 'hash_ring' ? 3 : 4)
     : ('replicas' in options ? +options.replicas : 4);
+
+  //
+  // Replica's cannot be 0 as it means we have nothing to iterate over when
+  // creating the initial hash ring.
+  //
+  if (this.replicas <= 0) this.replicas = 1;
 
   // Private properties.
   var connections = parse(servers);

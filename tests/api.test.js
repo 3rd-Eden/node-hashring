@@ -95,6 +95,15 @@ describe('HashRing', function () {
       assume(ring.ring).has.length(0);
     });
 
+    it('normalizes the replicas to 1', function () {
+      var ring = new Hashring([
+          '192.168.0.102:11212'
+        , '192.168.0.103:11212'
+      ], 'md5', { 'replicas': 0 });
+
+      assume(ring.replicas).equals(1);
+    });
+
     it('accepts different algorithms', function () {
       var ring = new Hashring('192.168.0.102:11212', 'sha1');
 
