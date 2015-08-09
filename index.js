@@ -1,9 +1,12 @@
 'use strict';
 
-var hashValue = require('bindings')('hashvalue.node')
-  , SimpleCache = require("simple-lru-cache")
+var SimpleCache = require("simple-lru-cache")
   , parse = require('connection-parse')
   , crypto = require('crypto');
+
+function hashValueHash(a, b, c, d) {
+  return ((a << 24) | (b << 16) | (c << 8) | d) >>> 0;
+}
 
 /**
  * Add a virtual node parser to the connection string parser.
@@ -134,7 +137,7 @@ HashRing.prototype.continuum = function generate() {
       }
 
       for (var j = 0; j < self.replicas; j++) {
-        key = hashValue.hash(x[3 + j * 4], x[2 + j * 4], x[1 + j * 4], x[j * 4]);
+        key = hashValueHash(x[3 + j * 4], x[2 + j * 4], x[1 + j * 4], x[j * 4]);
         self.ring[index] = new Node(key, server.string);
         index++;
       }
@@ -250,7 +253,7 @@ HashRing.prototype.digest = function digest(key) {
 HashRing.prototype.hashValue = function hasher(key) {
   var x = this.digest(key);
 
-  return hashValue.hash(x[3], x[2], x[1], x[0]);
+  return hashValueHash(x[3], x[2], x[1], x[0]);
 };
 
 /**

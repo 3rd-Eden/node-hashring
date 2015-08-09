@@ -23,9 +23,7 @@
     "url": "http://github.com/3rd-Eden/node-hashring.git"
   },
   "dependencies": {
-    "bindings": "1.2.x",
     "connection-parse": "0.0.x",
-    "nan": "2.0.x",
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
