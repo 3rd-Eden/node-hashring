@@ -8,7 +8,7 @@ NAN_METHOD(Hasher) {
     | ((int) info[2]->NumberValue() << 8)
     | (int) info[3]->NumberValue();
 
-  info.GetReturnValue().Set(hash);
+  info.GetReturnValue().Set(static_cast<double>(hash));
 }
 
 void init(Handle<Object> target) {
