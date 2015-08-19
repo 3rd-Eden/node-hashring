@@ -7,5 +7,18 @@ node_js:
   - "iojs"
 before_install:
   - 'if [ "${TRAVIS_NODE_VERSION}" == "0.8" ] ; then npm install -g npm@2.7.3; fi'
+install:
+  - export CXX="g++-4.8" CXX="gcc-4.8"
+  - $CXX --version
+  - npm install -g istanbul
+  - npm install
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+      - clang
 script:
   - "npm run test-travis"
