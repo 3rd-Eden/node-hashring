@@ -1,22 +1,21 @@
 #include <nan.h>
-
 using namespace v8;
 
 NAN_METHOD(Hasher) {
-  NanScope();
+  Nan::HandleScope();
 
-  unsigned int hash = ((int) args[0]->NumberValue() << 24)
-    | ((int) args[1]->NumberValue() << 16)
-    | ((int) args[2]->NumberValue() << 8)
-    | (int) args[3]->NumberValue();
+  unsigned int hash = ((int) info[0]->NumberValue() << 24)
+    | ((int) info[1]->NumberValue() << 16)
+    | ((int) info[2]->NumberValue() << 8)
+    | (int) info[3]->NumberValue();
 
-  NanReturnValue(NanNew<Number>(hash));
+  info.GetReturnValue().Set(Nan::New<Number>(hash));
 }
 
-void init(Handle<Object> target) {
+NAN_MODULE_INIT(init) {
   target->Set(
-      NanNew<String>("hash")
-    , NanNew<FunctionTemplate>(Hasher)->GetFunction()
+      Nan::New<String>("hash").ToLocalChecked()
+    , Nan::GetFunction(Nan::New<FunctionTemplate>(Hasher)).ToLocalChecked()
   );
 }
 
