@@ -1,3 +1,11 @@
+Aug 21, 2015 (3.2.0)
+- Changes to the .travis.yml
+- Binary add-on is removed infavor of a pure JS solution, this also fixes build
+  issues with IO.JS 3.0
+
+Unknown, 2015 (3.1.0)
+- Replica's can no longer be set to 0, it should be 1 at a minimum.
+
 Jan 16, 2015 (3.1.0)
 - Bump NaN dependency.
 - Removed 0.6 from Travis as it's getting install errors for certain dependencies
