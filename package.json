@@ -1,6 +1,6 @@
 {
   "name": "hashring",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "author": "Arnout Kazemier",
   "description": "A consistent hashring compatible with ketama hashing and python's hash_ring",
   "main": "./index.js",
@@ -32,7 +32,7 @@
     "devnull": "0.0.x",
     "istanbul": "0.3.x",
     "mocha": "2.2.x",
-    "pre-commit": "1.0.x"
+    "pre-commit": "1.1.x"
   },
   "scripts": {
     "100%": "istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
