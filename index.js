@@ -4,6 +4,11 @@ var SimpleCache = require("simple-lru-cache")
   , parse = require('connection-parse')
   , crypto = require('crypto');
 
+/**
+ * Generate the hash of the value.
+ *
+ * @api private
+ */
 function hashValueHash(a, b, c, d) {
   return ((a << 24) | (b << 16) | (c << 8) | d) >>> 0;
 }
