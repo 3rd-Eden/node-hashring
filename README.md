@@ -118,7 +118,7 @@ var HashRing = require('hashring');
 var ring = new HashRing([
     '127.0.0.1',
     '127.0.0.2',
-    '127.0.0.3', 
+    '127.0.0.3',
     '127.0.0.4'
   ], 'md5', {
     'max cache size': 10000
@@ -158,7 +158,7 @@ and virtual nodes assigned.
 
 #### HashRing.get(**key**)
 
-Find the correct node for the key which is closest to the point after what the
+Find the correct node for which the key is closest to the point after what the
 given key hashes to.
 
 - **key** String, Random key that needs to be searched in the hash ring
@@ -185,7 +185,7 @@ Returns a range of servers. Could be useful for replication.
 Hotswap identical servers with each other. This doesn't require the cache to be
 completely nuked and the hash ring distribution to be re-calculated.
 
-Please note that removing the server and a new adding server could potentially
+Please note that removing the server and adding a new server could potentially
 create a different distribution.
 
 - **from** String, The server that needs to be replaced
@@ -226,7 +226,7 @@ Reset the HashRing and clean up it's references.
 
 ### HashRing.end()
 
-Reset's the HashRing and closes the ring.
+Resets the HashRing and closes the ring.
 
 ---
 
@@ -302,4 +302,4 @@ following incompatible changes have been made for the sake of consistency:
   will be removed in the next minor version bump (1.1.0)
 - Added human readable configuration options instead of camelcase. This
   increases readability of the module.
-- CRC32 was removed as crypto engine because it was to unstable.
+- CRC32 was removed as crypto engine because it was too unstable.

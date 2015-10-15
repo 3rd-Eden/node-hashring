@@ -49,7 +49,7 @@ function HashRing(servers, algorithm, options) {
   this.algorithm = algorithm || 'md5';
 
   //
-  // if the default port is set, and a host uses it, then it is excluded from
+  // If the default port is set, and a host uses it, then it is excluded from
   // the hash.
   //
   this.defaultport = options['default port'] || null;
@@ -72,7 +72,7 @@ function HashRing(servers, algorithm, options) {
     : ('replicas' in options ? +options.replicas : 4);
 
   //
-  // Replica's cannot be 0 as it means we have nothing to iterate over when
+  // Replicas cannot be 0 as it means we have nothing to iterate over when
   // creating the initial hash ring.
   //
   if (this.replicas <= 0) this.replicas = 1;
@@ -85,7 +85,7 @@ function HashRing(servers, algorithm, options) {
   this.vnodes = connections.vnodes;
   this.servers = connections.servers;
 
-  // Set up a ache as we don't want to preform a hashing operation every single
+  // Set up a cache as we don't want to preform a hashing operation every single
   // time we lookup a key.
   this.cache = new SimpleCache({
     maxSize: 'max cache size' in  options ? options['max cache size'] : 5000
@@ -163,10 +163,10 @@ HashRing.prototype.continuum = function generate() {
 };
 
 /**
- * Find the correct node for the key which is closest to the point after what
+ * Find the correct node for which the key is closest to the point after what
  * the given key hashes to.
  *
- * @param {String} key Key who's server we need to figure out.
+ * @param {String} key Key whose server we need to figure out.
  * @returns {String} Server address.
  * @api public
  */
@@ -196,7 +196,7 @@ HashRing.prototype.find = function find(hashValue) {
     , prev
     , mid;
 
-  // Preform a search on the array to find the server with the next biggest
+  // Perform a search on the array to find the server with the next biggest
   // point after what the given key hashes to.
   while (true) {
     mid = (low + high) >> 1;
@@ -239,7 +239,7 @@ HashRing.prototype.hash = function hash(key) {
 HashRing.prototype.digest = function digest(key) {
   var hash = this.hash(key +'');
 
-  // Support for Node 0.10 which returns buffers so we don't need to charAt
+  // Support for Node 0.10 which returns buffers so we don't need charAt
   // lookups.
   if ('string' !== typeof hash) return hash;
 
@@ -354,7 +354,7 @@ HashRing.prototype.points = function points(servers) {
  * Hotswap identical servers with each other. This doesn't require the cache to
  * be completely nuked and the hash ring distribution to be re-calculated.
  *
- * Please note that removing the server and a new adding server could
+ * Please note that removing the server and adding a new server could
  * potentially create a different distribution.
  *
  * @param {String} from The server that needs to be replaced.
@@ -454,7 +454,7 @@ HashRing.prototype.remove = function remove(server) {
  * @returns {Boolean} Indication if we have that server.
  * @api public
  */
-HashRing.prototype.has = function add(server) {
+HashRing.prototype.has = function has(server) {
   for (var i = 0; i < this.ring.length; i++) {
     if (this.ring[i].server === server) return true;
   }
@@ -477,7 +477,7 @@ HashRing.prototype.reset = function reset() {
 };
 
 /**
- * End the hashring and clean up all of it's references.
+ * End the hashring and clean up all of its references.
  *
  * @returns {HashRing}
  * @api public
