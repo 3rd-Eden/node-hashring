@@ -4,6 +4,9 @@
   "author": "Arnout Kazemier",
   "description": "A consistent hashring compatible with ketama hashing and python's hash_ring",
   "main": "./index.js",
+  "files": [
+    "index.js"
+  ],
   "keywords": [
     "hashring",
     "hash ring",
