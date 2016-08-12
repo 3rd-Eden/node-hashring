@@ -126,7 +126,7 @@ HashRing.prototype.continuum = function generate() {
   servers.forEach(function each(server) {
     var percentage = server.weight / total
       , vnodes = self.vnodes[server.string] || self.vnode
-      , length = Math.floor(percentage * vnodes * servers.length)
+      , length = Math.round(percentage * vnodes * servers.length)
       , key
       , x;
 
