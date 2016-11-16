@@ -27,11 +27,11 @@
     "simple-lru-cache": "0.0.x"
   },
   "devDependencies": {
-    "assume": "1.2.x",
-    "benchmark": "1.0.x",
+    "assume": "~1.4.1",
+    "benchmark": "~2.1.2",
     "devnull": "0.0.x",
-    "istanbul": "0.3.x",
-    "mocha": "2.2.x",
+    "istanbul": "~0.4.5",
+    "mocha": "~3.1.2",
     "pre-commit": "1.1.x"
   },
   "scripts": {
