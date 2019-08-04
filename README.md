@@ -33,7 +33,7 @@ constructor with:
 #### String
 
 A single server, possible, but pointless in most cases if you only use one
-server, then done use the HashRing at all, it only adds overhead.
+server, then don't use the HashRing at all, it only adds overhead.
 
 ```js
 var ring = new HashRing('127.0.0.1:11211');
